@@ -48,7 +48,8 @@ if __name__ == '__main__':
         9: rand_colors,
         10: alternating,
         11: alternating_blinking,
-        12: alternating_travel
+        12: alternating_travel,
+        13: rolling_ball
         }
         
     mode_dispatcher = {

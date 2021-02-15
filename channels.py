@@ -246,3 +246,67 @@ def alternating_travel(e, strip_arr, ch_settings):
 		pos = (pos+1)%STRIP_LENGTH
 		
 		time.sleep(TICK_LENGTH*30)
+
+def rolling_ball(e, strip_arr, ch_settings):
+	print("rolling_ball")
+	random.seed()
+	center_left = int((STRIP_LENGTH/2)-1)
+	center_right = int((STRIP_LENGTH/2))
+	
+	ball_size = 3
+	ball_radius = int((ball_size-1)/2)
+	
+	min_pos = 0+ball_radius
+	max_pos = STRIP_LENGTH - 1 - ball_radius
+	
+	while True:
+		if e.isSet():
+				return
+		speed = random.randint(200, 400) #leds per second
+		decel = random.uniform(0.3,0.5) #per second
+		direction = random.randint(0,1)
+		if direction == 0:
+			direction = -1
+		pos = random.randint(0+ball_radius, STRIP_LENGTH-ball_radius-1)
+		
+		while True:
+			if e.isSet():
+				return
+			
+			pos += (speed/100)*direction
+			pos_int = int(pos)
+			
+			if pos_int < min_pos:
+				pos = min_pos + abs(pos-min_pos) 
+				direction = 1
+			elif pos_int >= max_pos:
+				pos = max_pos - abs(pos-max_pos)
+				direction = -1
+			
+			pos_int = int(pos)
+			
+			for i in range(STRIP_LENGTH):
+				strip_arr[i] = (0,0,0)
+
+			for i in range(pos_int - ball_radius, pos_int+ball_radius+1):
+				strip_arr[i] = (255,255,255)
+			strip_arr[center_left] = (255,0,0)
+			strip_arr[center_right] = (255,0,0)
+			
+			speed = speed - speed * (decel/100)
+			if speed <= 0.1:
+				break
+			
+			time.sleep(TICK_LENGTH*10)
+		pos_int = int(pos)
+		if pos_int < center_right:
+			strip_arr[center_left] = (0,255,0)
+		else:
+			strip_arr[center_right] = (0,255,0)
+		
+		for i in range(10): #mecessary to achieve quick return when requested
+			if e.isSet():
+				return
+			time.sleep(TICK_LENGTH*500)
+
+
