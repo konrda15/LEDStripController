@@ -12,10 +12,10 @@ STRIP_START = 0
 
 def normal(e, mode_arr, mode_settings):
 	print("normal")
-	brightness = mode_settings.brightness
 	while True:
 		if e.isSet():
 			return
+		brightness = mode_settings.brightness
 		for i in range(STRIP_LENGTH):
 			mode_arr[i] = (brightness, brightness, brightness)
 		time.sleep(TICK_LENGTH*100)

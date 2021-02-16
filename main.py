@@ -49,7 +49,14 @@ if __name__ == '__main__':
         10: alternating,
         11: alternating_blinking,
         12: alternating_travel,
-        13: rolling_ball
+        13: rolling_ball,
+        14: counter,
+        15: rainbow_colors,
+        16: rainbow_center,
+        17: color_transition,
+        18: color_transition_full,
+        19: color_transition_anim,
+        20: color_transition_full_anim,
         }
         
     mode_dispatcher = {
@@ -94,6 +101,12 @@ if __name__ == '__main__':
             ch_settings.variation += 1
         elif a == 's':
             ch_settings.variation -= 1
+        elif a == 'q':
+            mode_settings.brightness = round(min(1, mode_settings.brightness+0.1),1)
+            print("brightness: ", mode_settings.brightness)
+        elif a == 'e':
+            mode_settings.brightness = round(max(0, mode_settings.brightness-0.1),1)
+            print("brightness: ", mode_settings.brightness)
         elif a == 'm':
             mode_settings.mode = (mode_settings.mode+1)%len(mode_dispatcher)
             mode_e.set()
