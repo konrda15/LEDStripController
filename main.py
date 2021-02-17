@@ -57,6 +57,8 @@ if __name__ == '__main__':
         18: color_transition_full,
         19: color_transition_anim,
         20: color_transition_full_anim,
+        21: rand_colors_distinct,
+        22: game_show,
         }
         
     mode_dispatcher = {

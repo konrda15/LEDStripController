@@ -271,7 +271,7 @@ def rolling_ball(e, strip_arr, ch_settings):
 	while True:
 		if e.isSet():
 				return
-		speed = random.randint(200, 400) #leds per second
+		speed = random.randint(100, 600) #leds per second
 		decel = random.uniform(0.3,0.5) #per second
 		direction = random.randint(0,1)
 		if direction == 0:
@@ -303,7 +303,7 @@ def rolling_ball(e, strip_arr, ch_settings):
 			strip_arr[center_right] = (255,0,0)
 			
 			speed = speed - speed * (decel/100)
-			if speed <= 0.1:
+			if speed <= 0.5:
 				break
 			
 			time.sleep(TICK_LENGTH*10)
@@ -480,8 +480,8 @@ def color_transition_full_anim(e, strip_arr, ch_settings):
 	print("color_transition_full_anim")
 	
 	parts = [1,2,3,4,6,8,10,20,30]
-	color1 = color_dict[0]
-	color2 = color_dict[1]
+	color1 = color_dict[2]
+	color2 = color_dict[3]
 	pos = 0
 	while True:
 		if e.isSet():
@@ -490,12 +490,12 @@ def color_transition_full_anim(e, strip_arr, ch_settings):
 		var_index = ch_settings.variation%len(parts)
 		part_len = int(STRIP_LENGTH/parts[var_index])
 		color_diff = (color2[0]-color1[0], color2[1]-color1[1], color2[2]-color1[2]) 
-		
+
 		for i in range(parts[var_index]):
 			for j in range(part_len):
 				index = i*part_len+j
 				perc = j/part_len
-				
+
 				if i%2 == 0:
 					strip_arr[(index+pos)%STRIP_LENGTH] = (int(color2[0]-color_diff[0]*perc), int(color2[1]-color_diff[1]*perc), int(color2[2]-color_diff[2]*perc))
 				else:
@@ -504,3 +504,69 @@ def color_transition_full_anim(e, strip_arr, ch_settings):
 		pos += 1
 
 		time.sleep(TICK_LENGTH*10)
+
+def rand_colors_distinct(e, strip_arr, ch_settings):
+	print("rand_colors_distinct")
+	color_variation = [(3,11,19), (3,11), (11,19), (3,19), (3,23,27), (5,7,28,31), (2,3), (2,11), (2,19), (11,19,23), (3,11,23)]
+
+	while True:
+		if e.isSet():
+			return
+		
+		var_index = ch_settings.variation%len(color_variation)
+		
+		for i in range(STRIP_LENGTH):
+			color_index = random.randint(0, len(color_variation[var_index])-1)
+			strip_arr[i] = color_dict[color_variation[var_index][color_index]]
+
+		time.sleep(TICK_LENGTH*100)
+
+def game_show(e, strip_arr, ch_settings):
+	print("game_show")
+	parts = [2,3,4,5,6,10,20]
+
+	while True:
+		if e.isSet():
+			return
+		
+		var_index = ch_settings.variation%len(parts)
+		part_len = int(STRIP_LENGTH/parts[var_index])
+		winner = random.randint(0, parts[var_index]-1)
+		restart = False
+		
+		for rnd in range(40):
+			if e.isSet():
+				return
+			if ch_settings.variation%len(parts) != var_index:
+				restart = True
+				break
+			
+			for part in range(parts[var_index]):
+				is_on = 0
+				if (part+rnd)%parts[var_index] == 0:
+					is_on = 1
+				for i in range(part_len):
+					strip_arr[i+part*part_len] = (255*is_on,255*is_on,255*is_on)
+				strip_arr[part_len*part] = (255,0,0)
+				strip_arr[part_len*(part+1)-1] = (255,0,0)
+					
+			time.sleep(TICK_LENGTH*200)
+		
+		if restart == True:
+			continue
+		
+		for part in range(parts[var_index]):
+				is_on = 0
+				if part == winner:
+					is_on = 1
+				for i in range(part_len):
+					strip_arr[i+part*part_len] = (255*is_on,255*is_on,255*is_on)
+				strip_arr[part_len*part] = (255,0,0)
+				strip_arr[part_len*(part+1)-1] = (255,0,0)
+		
+		for i in range(10): #mecessary to achieve quick return when requested
+			if e.isSet():
+				return				
+			time.sleep(TICK_LENGTH*500)
+		
+		time.sleep(TICK_LENGTH*100)
