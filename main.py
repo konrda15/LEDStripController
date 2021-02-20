@@ -41,7 +41,7 @@ if __name__ == '__main__':
         2: two_colors, 
         3: three_colors, 
         4: ping_pong,
-        5: ping_no_pong,
+        5: travelling,
         6: rainbow,
         7: rainbow_animation,
         8: rainbow_fade,
@@ -64,6 +64,7 @@ if __name__ == '__main__':
         25: rainbow_alt_anim,
         26: rainbow_fade_alt,
         27: rainbow_center_alt,
+        28: progress_bar,
         }
         
     mode_dispatcher = {

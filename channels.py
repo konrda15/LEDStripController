@@ -99,54 +99,65 @@ def ping_pong(e, strip_arr, ch_settings):
 	default_c1 = 3
 	default_c2 = 1
 	
+	point_length = [1,2,3,4,5,6,8,10,15,20,30,40,50,60,90]
+	
 	pos = 0
 	change = 1
-	radius = 5
+	
 	while True:
 		if e.isSet():
 			return
 		
 		c_indices = getColorIndices(ch_settings, default_c1, default_c2, 0)
 		
+		var_index = ch_settings.variation%len(point_length)
+		p_length = point_length[var_index]
 		
 		for i in range(STRIP_LENGTH):
-			if(abs(i-pos) <= radius):
-				strip_arr[i] = color_dict[c_indices[0]]
+			strip_arr[i] = color_dict[c_indices[1]]
+		for i in range(p_length):
+			if pos+i >= STRIP_LENGTH:
+				strip_arr[STRIP_LENGTH-i-1] = color_dict[c_indices[0]]
 			else:
-				strip_arr[i] = color_dict[c_indices[1]]
+				strip_arr[pos+i] = color_dict[c_indices[0]]
 
 		pos += change
-		if(pos >= STRIP_MAX-radius):
+		if(pos >= STRIP_LENGTH-p_length):
 			change = -1
-		if(pos <= STRIP_START+radius):
+		if(pos == 0):
 			change = 1
 			
 		time.sleep(TICK_LENGTH*10)
 
-def ping_no_pong(e, strip_arr, ch_settings):
-	print("ping_no_pong")
+def travelling(e, strip_arr, ch_settings):
+	print("travelling")
 	
 	default_c1 = 3
 	default_c2 = 1
 
-	radius = 5
-	pos = radius
+	point_length = [1,2,3,4,5,6,8,10,15,20,30,40,50,60,90]
+	
 	change = 1
-
+	pos = 0
 	while True:
 		if e.isSet():
 			return
 			
 		c_indices = getColorIndices(ch_settings, default_c1, default_c2, 0)
+		
+		var_index = ch_settings.variation%len(point_length)
+		p_length = point_length[var_index]
 			
 		for i in range(STRIP_LENGTH):
-			if(abs(i-pos) <= radius or abs(i-pos) > STRIP_MAX-radius):
-				strip_arr[i] = color_dict[c_indices[0]]
+			strip_arr[i] = color_dict[c_indices[1]]
+		for i in range(p_length):
+			if pos+i >= STRIP_LENGTH:
+				strip_arr[i-(STRIP_LENGTH-pos)] = color_dict[c_indices[0]]
 			else:
-				strip_arr[i] = color_dict[c_indices[1]]
+				strip_arr[pos+i] = color_dict[c_indices[0]]
 
 		pos += change
-		if(pos >= STRIP_MAX):
+		if(pos >= STRIP_LENGTH):
 			pos = 0
 
 			
@@ -859,3 +870,54 @@ def rainbow_center_alt(e, strip_arr, ch_settings):
 
 		center_perc = (center_perc-0.4)%100
 		time.sleep(TICK_LENGTH*10)
+
+def progress_bar(e, strip_arr, ch_settings):
+	print("progress_bar")
+	
+	#10sec, 30sec, 1min, 15min, 30min, 1h, 1,5h, 2h, 3h
+	time_variants = [10,30,60,15*60,30*60,60*60,60*90,60*120,60*180]
+	
+	default_c1 = 2
+	default_c2 = 1
+	
+	progress = 0
+	time_passed = 0
+	while True:
+		if e.isSet():
+			return
+		
+		c_indices = getColorIndices(ch_settings, default_c1, default_c2, 0)
+			
+		var_index = ch_settings.variation%len(time_variants)
+			
+		for i in range(STRIP_LENGTH):
+			strip_arr[i] = color_dict[c_indices[1]]
+		for i in range(STRIP_LENGTH-2, STRIP_LENGTH-2-var_index-1, -1):
+			strip_arr[i] = (10,10,10)
+		for i in range(progress):
+			strip_arr[i] = color_dict[c_indices[0]]
+		for i in range(0, STRIP_LENGTH, int(STRIP_LENGTH/4)):
+			strip_arr[i] = color_dict[3]
+			strip_arr[i-1] = color_dict[3]
+		
+		
+		progress += 1
+		
+		restart = False	
+		while True:
+			if e.isSet():
+				return
+			if ch_settings.variation%len(time_variants) != var_index:
+				progress = 0
+				restart = True
+				break
+			if time_passed > time_variants[var_index]/STRIP_LENGTH:
+				time_passed -= time_variants[var_index]/STRIP_LENGTH
+				break
+			
+			time_passed += TICK_LENGTH*100
+			time.sleep(TICK_LENGTH*100)
+		
+		if progress >= STRIP_LENGTH or restart:
+			progress = 0
+			time_passed = 0
