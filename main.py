@@ -32,7 +32,7 @@ if __name__ == '__main__':
         strip_arr.append([0,0,0])
         mode_arr.append([0,0,0])
     
-    ch_settings = ChSettings(0,0,0)
+    ch_settings = ChSettings(0,0,0,0,0)
     mode_settings = ModeSettings(0,1)
     
     dispatcher = {
@@ -40,8 +40,8 @@ if __name__ == '__main__':
         1: one_color, 
         2: two_colors, 
         3: three_colors, 
-        4: animation1,
-        5: animation2,
+        4: ping_pong,
+        5: ping_no_pong,
         6: rainbow,
         7: rainbow_animation,
         8: rainbow_fade,
@@ -130,6 +130,38 @@ if __name__ == '__main__':
             mode_thr.join()
             draw_thr.join()
             break
+        elif 'c' in a: # valid input c103, c13 for primary color and third element in dict
+            if len(a) < 3 or len(a) > 4:
+                print("invalid command")
+                continue
+            if a[0] is not 'c':
+                print("invalid command")
+                continue 
+            try:
+                temp_a = a[1]
+                temp_b = a[2:len(a)]
+                color_index = int(temp_a)
+                color_dict_index = int(temp_b)
+                
+                if color_index < 1 or color_index > 3:
+                    print("invalid command")
+                    continue
+                if color_dict_index < 0 or color_dict_index >= len(color_dict):
+                    print("invalid command")
+                    continue
+                    
+                if color_index == 1:
+                    ch_settings.color1 = color_dict_index
+                    print("color", color_index, " changed to ", color_dict_index)
+                elif color_index == 2:
+                    ch_settings.color2 = color_dict_index
+                    print("color", color_index, " changed to ", color_dict_index)
+                elif color_index == 3:
+                    ch_settings.color3 = color_dict_index
+                    print("color", color_index, " changed to ", color_dict_index)
+            except:
+                print("invalid command")
+                continue
         else:
             try:
                 new_ch = int(a)
@@ -141,6 +173,7 @@ if __name__ == '__main__':
                     channel_thr = threading.Thread(target=dispatcher[index], args=(e,strip_arr, ch_settings))
                     channel_thr.start()
             except:
+                print("invalid command")
                 continue
                 
             
