@@ -523,7 +523,7 @@ def rand_colors_distinct(e, strip_arr, ch_settings):
 
 def game_show(e, strip_arr, ch_settings):
 	print("game_show")
-	parts = [2,3,4,5,6,10,20]
+	parts = [2,3,4,5,6,10]
 
 	while True:
 		if e.isSet():
@@ -555,18 +555,209 @@ def game_show(e, strip_arr, ch_settings):
 		if restart == True:
 			continue
 		
+		#waiting period
 		for part in range(parts[var_index]):
-				is_on = 0
+			for i in range(part_len):
+				strip_arr[i+part*part_len] = (0,0,0)
+			strip_arr[part_len*part] = (255,0,0)
+			strip_arr[part_len*(part+1)-1] = (255,0,0)
+		
+		for i in range(4): #mecessary to achieve quick return when requested
+			if e.isSet():
+				return	
+			if ch_settings.variation%len(parts) != var_index:
+				restart = True
+				break
+			time.sleep(TICK_LENGTH*500)
+		
+		if restart == True:
+			continue
+		
+		#winner presentation
+		for rnd in range(50):
+			if e.isSet():
+				return	
+			if ch_settings.variation%len(parts) != var_index:
+				restart = True
+				break
+			for part in range(parts[var_index]):
 				if part == winner:
-					is_on = 1
+					is_winner = True
+				else:
+					is_winner = False
+				
 				for i in range(part_len):
+					is_on = 0
+					if is_winner:
+						is_on = random.randint(0,1)
 					strip_arr[i+part*part_len] = (255*is_on,255*is_on,255*is_on)
 				strip_arr[part_len*part] = (255,0,0)
 				strip_arr[part_len*(part+1)-1] = (255,0,0)
+			
+			time.sleep(TICK_LENGTH*100)
 		
-		for i in range(10): #mecessary to achieve quick return when requested
+		if restart == True:
+			continue
+		
+		#post game waiting period
+		for part in range(parts[var_index]):
+			for i in range(part_len):
+				strip_arr[i+part*part_len] = (0,0,0)
+			strip_arr[part_len*part] = (255,0,0)
+			strip_arr[part_len*(part+1)-1] = (255,0,0)
+		
+		for i in range(4): #mecessary to achieve quick return when requested
 			if e.isSet():
 				return				
 			time.sleep(TICK_LENGTH*500)
 		
+def sunrise(e, strip_arr, ch_settings):
+	print("sunrise")
+	
+	center_left = int((STRIP_LENGTH/2)-1)
+	center_right = int((STRIP_LENGTH/2))
+	
+	sun_color = (255,80,0)
+
+	sun_radius = 0
+	red_radius = 1
+	
+	
+	while True:
+		if e.isSet():
+			return
+		
+		for i in range(STRIP_LENGTH):
+			strip_arr[i] = (0,0,0)
+		
+		for i in range(sun_radius):
+			strip_arr[center_right-i] = sun_color
+			strip_arr[center_left+i] = sun_color
+		
+		for i in range(red_radius):
+			if center_right-sun_radius-i < 0:
+				break
+			bg_color = (red_radius-i,int((red_radius-i)/15),0)
+			strip_arr[center_right-sun_radius-i] = bg_color
+			strip_arr[center_left+sun_radius+i] = bg_color
+		
+		
+		sun_radius += 1
+		red_radius = sun_radius * 4
+
+		if sun_radius >= 20:
+			for i in range(10):
+				if e.isSet():
+					return
+				time.sleep(TICK_LENGTH*500)	
+			sun_radius = 0
+			red_radius = 1
+			
+		time.sleep(TICK_LENGTH*200)
+
+def rainbow_wheel(pos):
+	if pos < 1/3:
+		mult = pos*3
+		return (int(255-255*mult),int(255*mult),0)
+	elif pos < 2/3:
+		mult = (pos-1/3)*3
+		return (0,int(255-255*mult),int(255*mult))
+	else:
+		mult = (pos-2/3)*3
+		return (int(255*mult),0,int(255-255*mult))
+	
+def rainbow_alt(e, strip_arr, ch_settings):
+	print("rainbow_alt")
+
+	staggering = [(1), (1/12), (1/6)]
+
+	while True:
+		if e.isSet():
+			return
+
+		var_index = ch_settings.variation%len(staggering)
+		   
+		for i in range(STRIP_LENGTH):
+			perc = i/STRIP_LENGTH
+			if staggering[var_index] != 1:
+				perc -= perc%staggering[var_index]
+			strip_arr[i] = rainbow_wheel(perc)
+			
 		time.sleep(TICK_LENGTH*100)
+
+def rainbow_alt_anim(e, strip_arr, ch_settings):
+	print("rainbow_alt_anim")
+
+	staggering = [(1), (1/12), (1/6)]
+	
+	pos = 0
+	while True:
+		if e.isSet():
+			return
+
+		var_index = ch_settings.variation%len(staggering)
+		   
+		for i in range(STRIP_LENGTH):
+			perc = i/STRIP_LENGTH
+			if staggering[var_index] != 1:
+				perc -= perc%staggering[var_index]
+			strip_arr[(i+pos)%STRIP_LENGTH] = rainbow_wheel(perc)
+		
+		pos += 1
+		time.sleep(TICK_LENGTH*10)
+		
+def rainbow_fade_alt(e, strip_arr, ch_settings):
+	print("rainbow_fade_alt")
+
+	staggering = [(1), (1/12), (1/6)]
+	
+	perc = 0
+	while True:
+		if e.isSet():
+			return
+			
+		var_index = ch_settings.variation%len(staggering)
+		
+		for i in range(STRIP_LENGTH):
+			temp_perc = perc/100
+			if staggering[var_index] != 1:
+				temp_perc -= temp_perc%staggering[var_index]
+			strip_arr[i] = rainbow_wheel(temp_perc)
+		
+		perc = (perc+1)%100
+		time.sleep(TICK_LENGTH*100)
+
+def rainbow_center_alt(e, strip_arr, ch_settings):
+	print("rainbow_center_alt")
+
+	staggering = [(1), (1/12), (1/6)]
+
+	center_perc = 0
+	center_left = int((STRIP_LENGTH/2)-1)
+	center_right = int((STRIP_LENGTH/2))
+	
+	while True:
+		if e.isSet():
+			return
+
+		var_index = ch_settings.variation%len(staggering)
+		
+		for i in range(STRIP_LENGTH):
+			if i <= center_left:
+				perc = (center_left-i)*100/(STRIP_LENGTH)
+				perc = (perc+center_perc)%100
+				perc /= 100
+				if staggering[var_index] != 1:
+					perc -= perc%staggering[var_index]
+				strip_arr[i] = rainbow_wheel(perc)
+			else:
+				perc = (i-center_right)*100/(STRIP_LENGTH)
+				perc = (perc+center_perc)%100
+				perc /= 100
+				if staggering[var_index] != 1:
+					perc -= perc%staggering[var_index]
+				strip_arr[i] = rainbow_wheel(perc)
+			
+
+		center_perc = (center_perc-0.4)%100
+		time.sleep(TICK_LENGTH*10)

@@ -70,7 +70,7 @@ def blinking(e, mode_arr, mode_settings):
 		time.sleep(TICK_LENGTH*500)
 
 def fast_blinking(e, mode_arr, mode_settings):
-	print("blinking")
+	print("fast_blinking")
 	brightness = mode_settings.brightness
 	
 	on_off = 0 
@@ -104,3 +104,36 @@ def strobe(e, mode_arr, mode_settings):
 			mode_arr[i] = (current_b,current_b,current_b)
 		
 		time.sleep(TICK_LENGTH*25)
+
+def adv_fade(e, mode_arr, mode_settings):
+	print("adv_fade")
+	brightness = mode_settings.brightness
+	
+	fade = 1
+	direction = -1
+	change_factor = 1/10
+	constant_amount = 0.001
+	
+	while True:
+		if e.isSet():
+			return
+
+		fade += fade*change_factor*direction+constant_amount*direction
+		fade = round(fade, 3)
+		
+		if(fade <= 0):
+			direction = 1
+			fade = 0
+		elif(fade >= 1):
+			direction = -1
+			fade = 1
+		
+		current_b = fade*brightness
+		
+		for i in range(STRIP_LENGTH):
+			mode_arr[i] = (current_b,current_b,current_b)
+			
+		
+		
+			
+		time.sleep(TICK_LENGTH*40)

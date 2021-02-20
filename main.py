@@ -59,14 +59,20 @@ if __name__ == '__main__':
         20: color_transition_full_anim,
         21: rand_colors_distinct,
         22: game_show,
+        23: sunrise,
+        24: rainbow_alt,
+        25: rainbow_alt_anim,
+        26: rainbow_fade_alt,
+        27: rainbow_center_alt,
         }
         
     mode_dispatcher = {
         0: normal,
         1: fade,
-        2: blinking,
-        3: fast_blinking,
-        4: strobe
+        2: adv_fade,
+        3: blinking,
+        4: fast_blinking,
+        5: strobe
     }
     
     e = threading.Event()
@@ -124,5 +130,17 @@ if __name__ == '__main__':
             mode_thr.join()
             draw_thr.join()
             break
+        else:
+            try:
+                new_ch = int(a)
+                if new_ch >= 0 and new_ch < len(dispatcher):
+                    index = new_ch
+                    e.set()
+                    channel_thr.join()
+                    e.clear()
+                    channel_thr = threading.Thread(target=dispatcher[index], args=(e,strip_arr, ch_settings))
+                    channel_thr.start()
+            except:
+                continue
                 
             
