@@ -65,6 +65,7 @@ if __name__ == '__main__':
         26: rainbow_fade_alt,
         27: rainbow_center_alt,
         28: progress_bar,
+        29: flags,
         }
         
     mode_dispatcher = {

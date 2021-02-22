@@ -764,19 +764,23 @@ def sunrise(e, strip_arr, ch_settings):
 			
 		time.sleep(TICK_LENGTH*200)
 
-def rainbow_wheel(pos):
+def rainbow_wheel(pos, c1, c2, c3):
 	if pos < 1/3:
 		mult = pos*3
-		return (int(255-255*mult),int(255*mult),0)
+		return (int(c1[0]+(c2[0]-c1[0])*mult),int(c1[1]+(c2[1]-c1[1])*mult),int(c1[2]+(c2[2]-c1[2])*mult))
 	elif pos < 2/3:
 		mult = (pos-1/3)*3
-		return (0,int(255-255*mult),int(255*mult))
+		return (int(c2[0]+(c3[0]-c2[0])*mult),int(c2[1]+(c3[1]-c2[1])*mult),int(c2[2]+(c3[2]-c2[2])*mult))
 	else:
 		mult = (pos-2/3)*3
-		return (int(255*mult),0,int(255-255*mult))
+		return (int(c3[0]+(c1[0]-c3[0])*mult),int(c3[1]+(c1[1]-c3[1])*mult),int(c3[2]+(c1[2]-c3[2])*mult))
 	
 def rainbow_alt(e, strip_arr, ch_settings):
 	print("rainbow_alt")
+
+	default_c1 = 3
+	default_c2 = 11
+	default_c3 = 19
 
 	staggering = [(1), (1/12), (1/6)]
 
@@ -784,18 +788,28 @@ def rainbow_alt(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 
+		c_indices = getColorIndices(ch_settings, default_c1, default_c2, default_c3)
+		
+		color1 = color_dict[c_indices[0]]
+		color2 = color_dict[c_indices[1]]
+		color3 = color_dict[c_indices[2]]
+		
 		var_index = ch_settings.variation%len(staggering)
 		   
 		for i in range(STRIP_LENGTH):
 			perc = i/STRIP_LENGTH
 			if staggering[var_index] != 1:
 				perc -= perc%staggering[var_index]
-			strip_arr[i] = rainbow_wheel(perc)
+			strip_arr[i] = rainbow_wheel(perc, color1, color2, color3)
 			
 		time.sleep(TICK_LENGTH*100)
 
 def rainbow_alt_anim(e, strip_arr, ch_settings):
 	print("rainbow_alt_anim")
+	
+	default_c1 = 3
+	default_c2 = 11
+	default_c3 = 19
 
 	staggering = [(1), (1/12), (1/6)]
 	
@@ -803,6 +817,12 @@ def rainbow_alt_anim(e, strip_arr, ch_settings):
 	while True:
 		if e.isSet():
 			return
+			
+		c_indices = getColorIndices(ch_settings, default_c1, default_c2, default_c3)
+		
+		color1 = color_dict[c_indices[0]]
+		color2 = color_dict[c_indices[1]]
+		color3 = color_dict[c_indices[2]]
 
 		var_index = ch_settings.variation%len(staggering)
 		   
@@ -810,14 +830,18 @@ def rainbow_alt_anim(e, strip_arr, ch_settings):
 			perc = i/STRIP_LENGTH
 			if staggering[var_index] != 1:
 				perc -= perc%staggering[var_index]
-			strip_arr[(i+pos)%STRIP_LENGTH] = rainbow_wheel(perc)
+			strip_arr[(i+pos)%STRIP_LENGTH] = rainbow_wheel(perc, color1, color2, color3)
 		
 		pos += 1
 		time.sleep(TICK_LENGTH*10)
 		
 def rainbow_fade_alt(e, strip_arr, ch_settings):
 	print("rainbow_fade_alt")
-
+	
+	default_c1 = 3
+	default_c2 = 11
+	default_c3 = 19
+	
 	staggering = [(1), (1/12), (1/6)]
 	
 	perc = 0
@@ -825,19 +849,29 @@ def rainbow_fade_alt(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 			
+		c_indices = getColorIndices(ch_settings, default_c1, default_c2, default_c3)
+		
+		color1 = color_dict[c_indices[0]]
+		color2 = color_dict[c_indices[1]]
+		color3 = color_dict[c_indices[2]]
+			
 		var_index = ch_settings.variation%len(staggering)
 		
 		for i in range(STRIP_LENGTH):
 			temp_perc = perc/100
 			if staggering[var_index] != 1:
 				temp_perc -= temp_perc%staggering[var_index]
-			strip_arr[i] = rainbow_wheel(temp_perc)
+			strip_arr[i] = rainbow_wheel(temp_perc, color1, color2, color3)
 		
 		perc = (perc+1)%100
 		time.sleep(TICK_LENGTH*100)
 
 def rainbow_center_alt(e, strip_arr, ch_settings):
 	print("rainbow_center_alt")
+	
+	default_c1 = 3
+	default_c2 = 11
+	default_c3 = 19
 
 	staggering = [(1), (1/12), (1/6)]
 
@@ -848,6 +882,12 @@ def rainbow_center_alt(e, strip_arr, ch_settings):
 	while True:
 		if e.isSet():
 			return
+			
+		c_indices = getColorIndices(ch_settings, default_c1, default_c2, default_c3)
+		
+		color1 = color_dict[c_indices[0]]
+		color2 = color_dict[c_indices[1]]
+		color3 = color_dict[c_indices[2]]
 
 		var_index = ch_settings.variation%len(staggering)
 		
@@ -858,14 +898,14 @@ def rainbow_center_alt(e, strip_arr, ch_settings):
 				perc /= 100
 				if staggering[var_index] != 1:
 					perc -= perc%staggering[var_index]
-				strip_arr[i] = rainbow_wheel(perc)
+				strip_arr[i] = rainbow_wheel(perc, color1, color2, color3)
 			else:
 				perc = (i-center_right)*100/(STRIP_LENGTH)
 				perc = (perc+center_perc)%100
 				perc /= 100
 				if staggering[var_index] != 1:
 					perc -= perc%staggering[var_index]
-				strip_arr[i] = rainbow_wheel(perc)
+				strip_arr[i] = rainbow_wheel(perc, color1, color2, color3)
 			
 
 		center_perc = (center_perc-0.4)%100
@@ -921,3 +961,25 @@ def progress_bar(e, strip_arr, ch_settings):
 		if progress >= STRIP_LENGTH or restart:
 			progress = 0
 			time_passed = 0
+
+def flags(e, strip_arr, ch_settings):
+	print("flags")
+	
+	flag = ((3,2,3),(1,3,25),(19,2,3),(11,2,3),(3,2,11),(2,11,3),(11,25,3),(19,2,26),(2,19,3),(11,1,2),(25,19,3),(3,11,26),(11,3,19),(3,24,19),(1,2,3))
+	
+	while True:
+		if e.isSet():
+			return
+			
+		var_index = ch_settings.variation%len(flag)
+		
+		third = int(STRIP_LENGTH/3)-1
+		twothirds = third + int(STRIP_LENGTH/3)
+
+		for i in range(0, third):
+			strip_arr[i] = color_dict[flag[var_index][2]]
+		for i in range(third, twothirds):
+			strip_arr[i] = color_dict[flag[var_index][1]]
+		for i in range(twothirds, STRIP_LENGTH):
+			strip_arr[i] = color_dict[flag[var_index][0]]
+		time.sleep(TICK_LENGTH*100)

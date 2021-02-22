@@ -31,4 +31,13 @@ color_dict = {
 	29: (255,128,16), #warm white
 	30: (255,128,32), #reddish white
 	31: (255,64,16), #flesh
+	32: (100,5,5), #dark pink
+	33: (1,1,1), #dark grey
+	34: (5,5,5), #grey
+	35: (5,0,0), #dark red
+	36: (0,5,0), #dark green
+	37: (0,0,5), #dark blue
+	38: (5,5,0), #dark yellow
+	39: (5,0,5), #dark magenta
+	40: (0,5,5), #dark cyan
 }
