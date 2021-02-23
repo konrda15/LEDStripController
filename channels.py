@@ -6,7 +6,7 @@ import threading
 import colorsys
 from colors import *
 
-TICK_LENGTH = 0.001
+
 STRIP_LENGTH = 180
 STRIP_MAX = 180
 STRIP_START = 0
@@ -16,24 +16,24 @@ def hsv_rgb(h,s,v):
     c = tuple(round(j*255) for j in  colorsys.hsv_to_rgb(h/360,s/100,v/100))
     return [c[0], c[1], c[2]]
 
-def clear_strip(e, strip_arr, ch_settings):
+def clear_strip(e, strip_arr, settings):
 	print("clear_strip")
 	for i in range(STRIP_LENGTH):
 		strip_arr[i] = (0,0,0)
 
-def getColorIndices(ch_settings, default_c1, default_c2, default_c3):
-	c1 = ch_settings.color1
+def getColorIndices(settings, default_c1, default_c2, default_c3):
+	c1 = settings.color1
 	if c1 == 0:
 		c1 = default_c1
-	c2 = ch_settings.color2
+	c2 = settings.color2
 	if c2 == 0:
 		c2 = default_c2	
-	c3 = ch_settings.color3
+	c3 = settings.color3
 	if c3 == 0:
 		c3 = default_c3
 	return (c1,c2,c3)
 
-def one_color(e, strip_arr, ch_settings):
+def one_color(e, strip_arr, settings):
 	print("one_color")
 	
 	default_c1 = 2
@@ -42,15 +42,15 @@ def one_color(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 		
-		c_indices = getColorIndices(ch_settings, default_c1, 0, 0)
+		c_indices = getColorIndices(settings, default_c1, 0, 0)
 			
 		for i in range(STRIP_LENGTH):
 			strip_arr[i] = color_dict[c_indices[0]]
 
-		time.sleep(TICK_LENGTH*100)
+		time.sleep(settings.tick_length*100)
         
         
-def two_colors(e, strip_arr, ch_settings):
+def two_colors(e, strip_arr, settings):
 	print("two_colors")
 	
 	default_c1 = 3
@@ -60,16 +60,16 @@ def two_colors(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 			
-		c_indices = getColorIndices(ch_settings, default_c1, default_c2, 0)
+		c_indices = getColorIndices(settings, default_c1, default_c2, 0)
 			
 		half = int(STRIP_LENGTH/2)-1
 		for i in range(0, half):
 			strip_arr[i] = color_dict[c_indices[1]]
 		for i in range(half, STRIP_LENGTH):
 			strip_arr[i] = color_dict[c_indices[0]]
-		time.sleep(TICK_LENGTH*100)
+		time.sleep(settings.settings.tick_length*100)
         
-def three_colors(e, strip_arr, ch_settings):
+def three_colors(e, strip_arr, settings):
 	print("three_colors")
 	
 	default_c1 = 3
@@ -80,7 +80,7 @@ def three_colors(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 			
-		c_indices = getColorIndices(ch_settings, default_c1, default_c2, default_c3)
+		c_indices = getColorIndices(settings, default_c1, default_c2, default_c3)
 			
 		third = int(STRIP_LENGTH/3)-1
 		twothirds = third + int(STRIP_LENGTH/3)
@@ -91,9 +91,9 @@ def three_colors(e, strip_arr, ch_settings):
 			strip_arr[i] = color_dict[c_indices[1]]
 		for i in range(twothirds, STRIP_LENGTH):
 			strip_arr[i] = color_dict[c_indices[0]]
-		time.sleep(TICK_LENGTH*100)
+		time.sleep(settings.tick_length*100)
 
-def ping_pong(e, strip_arr, ch_settings):
+def ping_pong(e, strip_arr, settings):
 	print("ping_pong")
 	
 	default_c1 = 3
@@ -108,9 +108,9 @@ def ping_pong(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 		
-		c_indices = getColorIndices(ch_settings, default_c1, default_c2, 0)
+		c_indices = getColorIndices(settings, default_c1, default_c2, 0)
 		
-		var_index = ch_settings.variation%len(point_length)
+		var_index = settings.variation%len(point_length)
 		p_length = point_length[var_index]
 		
 		for i in range(STRIP_LENGTH):
@@ -127,9 +127,9 @@ def ping_pong(e, strip_arr, ch_settings):
 		if(pos == 0):
 			change = 1
 			
-		time.sleep(TICK_LENGTH*10)
+		time.sleep(settings.tick_length*10)
 
-def travelling(e, strip_arr, ch_settings):
+def travelling(e, strip_arr, settings):
 	print("travelling")
 	
 	default_c1 = 3
@@ -143,9 +143,9 @@ def travelling(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 			
-		c_indices = getColorIndices(ch_settings, default_c1, default_c2, 0)
+		c_indices = getColorIndices(settings, default_c1, default_c2, 0)
 		
-		var_index = ch_settings.variation%len(point_length)
+		var_index = settings.variation%len(point_length)
 		p_length = point_length[var_index]
 			
 		for i in range(STRIP_LENGTH):
@@ -161,9 +161,9 @@ def travelling(e, strip_arr, ch_settings):
 			pos = 0
 
 			
-		time.sleep(TICK_LENGTH*10)
+		time.sleep(settings.tick_length*10)
 
-def rainbow(e, strip_arr, ch_settings):
+def rainbow(e, strip_arr, settings):
 	print("rainbow")
 
 	staggering = [(1), (30), (60)]
@@ -172,17 +172,17 @@ def rainbow(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 
-		var_index = ch_settings.variation%len(staggering)
+		var_index = settings.variation%len(staggering)
 		   
 		for i in range(STRIP_LENGTH):
 			hue = 360 * (i/STRIP_MAX)
 			hue = hue - hue%staggering[var_index]
 			strip_arr[i] = hsv_rgb(hue, 100, 100)
 			
-		time.sleep(TICK_LENGTH*100)
+		time.sleep(settings.tick_length*100)
 
 
-def rainbow_animation(e, strip_arr, ch_settings):
+def rainbow_animation(e, strip_arr, settings):
 	print("rainbow_animation")
 
 	staggering = [(1), (30), (60)]
@@ -192,7 +192,7 @@ def rainbow_animation(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 
-		var_index = ch_settings.variation%len(staggering)
+		var_index = settings.variation%len(staggering)
 
 		for i in range(STRIP_LENGTH):
 			hue = 360 * (i/STRIP_MAX)
@@ -201,9 +201,9 @@ def rainbow_animation(e, strip_arr, ch_settings):
 			
 
 		pos += 1
-		time.sleep(TICK_LENGTH*10)
+		time.sleep(settings.tick_length*10)
         
-def rand_colors(e, strip_arr, ch_settings):
+def rand_colors(e, strip_arr, settings):
 	print("rand_colors")
 	ranges = [(0,360),(0,60),(40,120),(80,260),(240,360),(300,420),(300,500)]
 
@@ -212,13 +212,13 @@ def rand_colors(e, strip_arr, ch_settings):
 			return
 
 		for i in range(STRIP_LENGTH):
-			var_index = ch_settings.variation%len(ranges)
+			var_index = settings.variation%len(ranges)
 			hue = random.randint(ranges[var_index][0], ranges[var_index][1])%360
 			strip_arr[i] = hsv_rgb(hue, 100, 100)
 
-		time.sleep(TICK_LENGTH*100)
+		time.sleep(settings.tick_length*100)
 
-def rainbow_fade(e, strip_arr, ch_settings):
+def rainbow_fade(e, strip_arr, settings):
 	print("rainbow_fade")
 
 	staggering = [(1), (30), (60)]
@@ -228,7 +228,7 @@ def rainbow_fade(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 
-		var_index = ch_settings.variation%len(staggering)
+		var_index = settings.variation%len(staggering)
 
 		hue = pos
 		hue = hue - hue%staggering[var_index]
@@ -236,9 +236,9 @@ def rainbow_fade(e, strip_arr, ch_settings):
 			strip_arr[i] = hsv_rgb(hue, 100, 100)
 
 		pos = (pos+1)%360
-		time.sleep(TICK_LENGTH*20)
+		time.sleep(settings.tick_length*20)
 		
-def alternating(e, strip_arr, ch_settings):
+def alternating(e, strip_arr, settings):
 	print("alternating")
 
 	default_c1 = 2
@@ -251,19 +251,19 @@ def alternating(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 			
-		c_indices = getColorIndices(ch_settings, default_c1, default_c2, 0)
+		c_indices = getColorIndices(settings, default_c1, default_c2, 0)
 			
-		var_index = ch_settings.variation%len(staggering)
+		var_index = settings.variation%len(staggering)
 		
 		for i in range(STRIP_LENGTH):
 			if i%(STRIP_LENGTH/(staggering[var_index]/2)) < STRIP_LENGTH/staggering[var_index]:
 				strip_arr[i] = color_dict[c_indices[0]]
 			else:
 				strip_arr[i] = color_dict[c_indices[1]]
-		time.sleep(TICK_LENGTH*100)
+		time.sleep(settings.tick_length*100)
 
 
-def alternating_blinking(e, strip_arr, ch_settings):
+def alternating_blinking(e, strip_arr, settings):
 	print("alternating_blinking")
 
 	staggering = [(2), (4), (6), (10), (20), (60), (STRIP_LENGTH)]
@@ -277,9 +277,9 @@ def alternating_blinking(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 		
-		c_indices = getColorIndices(ch_settings, default_c1, default_c2, 0)
+		c_indices = getColorIndices(settings, default_c1, default_c2, 0)
 
-		var_index = ch_settings.variation%len(staggering)
+		var_index = settings.variation%len(staggering)
 		
 		for i in range(STRIP_LENGTH):
 			if i%(STRIP_LENGTH/(staggering[var_index]/2)) < STRIP_LENGTH/staggering[var_index]:
@@ -288,9 +288,9 @@ def alternating_blinking(e, strip_arr, ch_settings):
 				strip_arr[i] = color_dict[c_indices[(pos+1)%2]]
 				
 		pos = (pos+1)%2
-		time.sleep(TICK_LENGTH*500)
+		time.sleep(settings.tick_length*500)
 
-def alternating_travel(e, strip_arr, ch_settings):
+def alternating_travel(e, strip_arr, settings):
 	print("alternating_travel")
 
 	staggering = [(2), (4), (6), (10), (20), (60)]
@@ -303,9 +303,9 @@ def alternating_travel(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 			
-		c_indices = getColorIndices(ch_settings, default_c1, default_c2, 0)
+		c_indices = getColorIndices(settings, default_c1, default_c2, 0)
 			
-		var_index = ch_settings.variation%len(staggering)
+		var_index = settings.variation%len(staggering)
 		
 		for i in range(STRIP_LENGTH):
 			if i%(STRIP_LENGTH/(staggering[var_index]/2)) < STRIP_LENGTH/staggering[var_index]:
@@ -315,9 +315,9 @@ def alternating_travel(e, strip_arr, ch_settings):
 		
 		pos = (pos+1)%STRIP_LENGTH
 		
-		time.sleep(TICK_LENGTH*30)
+		time.sleep(settings.tick_length*30)
 
-def rolling_ball(e, strip_arr, ch_settings):
+def rolling_ball(e, strip_arr, settings):
 	print("rolling_ball")
 	
 	default_c1 = 2
@@ -347,7 +347,7 @@ def rolling_ball(e, strip_arr, ch_settings):
 			if e.isSet():
 				return
 			
-			c_indices = getColorIndices(ch_settings, default_c1, 0, 0)
+			c_indices = getColorIndices(settings, default_c1, 0, 0)
 			
 			pos += (speed/100)*direction
 			pos_int = int(pos)
@@ -373,7 +373,7 @@ def rolling_ball(e, strip_arr, ch_settings):
 			if speed <= 0.5:
 				break
 			
-			time.sleep(TICK_LENGTH*10)
+			time.sleep(settings.tick_length*10)
 		pos_int = int(pos)
 		if pos_int < center_right:
 			strip_arr[center_left] = (0,255,0)
@@ -383,9 +383,9 @@ def rolling_ball(e, strip_arr, ch_settings):
 		for i in range(10): #mecessary to achieve quick return when requested
 			if e.isSet():
 				return
-			time.sleep(TICK_LENGTH*500)
+			time.sleep(settings.tick_length*500)
 
-def counter(e, strip_arr, ch_settings):
+def counter(e, strip_arr, settings):
 	print("counter")
 	
 	default_c1 = 2
@@ -395,7 +395,7 @@ def counter(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 			
-		c_indices = getColorIndices(ch_settings, default_c1, 0, 0)
+		c_indices = getColorIndices(settings, default_c1, 0, 0)
 			
 		for i in range(STRIP_LENGTH):
 			strip_arr[i] = (0,0,0)
@@ -409,10 +409,10 @@ def counter(e, strip_arr, ch_settings):
 			temp_count >>= 1
 			
 		count += 1
-		time.sleep(TICK_LENGTH*100)
+		time.sleep(settings.tick_length*200)
 
 #deprecated
-def rainbow_colors(e, strip_arr, ch_settings):
+def rainbow_colors(e, strip_arr, settings):
 	print("rainbow_colors")
 
 	hue_range = [(160,240),(100,240), (0,30)]
@@ -422,7 +422,7 @@ def rainbow_colors(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 
-		var_index = ch_settings.variation%len(hue_range)
+		var_index = settings.variation%len(hue_range)
 		
 		half = int(STRIP_LENGTH/2)
 		lower_lim = hue_range[var_index][0]
@@ -438,9 +438,9 @@ def rainbow_colors(e, strip_arr, ch_settings):
 			strip_arr[(i+pos)%STRIP_MAX] = hsv_rgb(hue, 100, 100)	
 
 		pos += 1
-		time.sleep(TICK_LENGTH*10)
+		time.sleep(settings.tick_length*10)
 
-def rainbow_center(e, strip_arr, ch_settings):
+def rainbow_center(e, strip_arr, settings):
 	print("rainbow_center")
 
 	staggering = [(1), (30), (60)]
@@ -454,7 +454,7 @@ def rainbow_center(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 
-		var_index = ch_settings.variation%len(staggering)
+		var_index = settings.variation%len(staggering)
 		for i in range(center_left, 0, -1):
 			hue = center_val + 360 * ((center_left-i)/(half))
 			hue = hue%360
@@ -469,9 +469,9 @@ def rainbow_center(e, strip_arr, ch_settings):
 			
 
 		center_val = (center_val-1)%360
-		time.sleep(TICK_LENGTH*10)
+		time.sleep(settings.tick_length*10)
 
-def color_transition(e, strip_arr, ch_settings):
+def color_transition(e, strip_arr, settings):
 	print("color_transition")
 	
 	parts = [1,2,3,4,6,8,10,20,30]
@@ -482,12 +482,12 @@ def color_transition(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 			
-		c_indices = getColorIndices(ch_settings, default_c1, default_c2, 0)
+		c_indices = getColorIndices(settings, default_c1, default_c2, 0)
 		
 		color1 = color_dict[c_indices[0]]
 		color2 = color_dict[c_indices[1]]
 			
-		var_index = ch_settings.variation%len(parts)
+		var_index = settings.variation%len(parts)
 		part_len = int(STRIP_LENGTH/parts[var_index])
 		color_diff = (color2[0]-color1[0], color2[1]-color1[1], color2[2]-color1[2]) 
 		
@@ -499,9 +499,9 @@ def color_transition(e, strip_arr, ch_settings):
 				
 
 
-		time.sleep(TICK_LENGTH*100)
+		time.sleep(settings.tick_length*100)
 
-def color_transition_full(e, strip_arr, ch_settings):
+def color_transition_full(e, strip_arr, settings):
 	print("color_transition_full")
 	
 	parts = [1,2,3,4,6,8,10,20,30]
@@ -512,12 +512,12 @@ def color_transition_full(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 		
-		c_indices = getColorIndices(ch_settings, default_c1, default_c2, 0)
+		c_indices = getColorIndices(settings, default_c1, default_c2, 0)
 		
 		color1 = color_dict[c_indices[0]]
 		color2 = color_dict[c_indices[1]]
 			
-		var_index = ch_settings.variation%len(parts)
+		var_index = settings.variation%len(parts)
 		part_len = int(STRIP_LENGTH/parts[var_index])
 		color_diff = (color2[0]-color1[0], color2[1]-color1[1], color2[2]-color1[2]) 
 		
@@ -533,9 +533,9 @@ def color_transition_full(e, strip_arr, ch_settings):
 				
 
 
-		time.sleep(TICK_LENGTH*100)
+		time.sleep(settings.tick_length*100)
 
-def color_transition_anim(e, strip_arr, ch_settings):
+def color_transition_anim(e, strip_arr, settings):
 	print("color_transition_anim")
 	
 	parts = [1,2,3,4,6,8,10,20,30]
@@ -548,12 +548,12 @@ def color_transition_anim(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 			
-		c_indices = getColorIndices(ch_settings, default_c1, default_c2, 0)
+		c_indices = getColorIndices(settings, default_c1, default_c2, 0)
 		
 		color1 = color_dict[c_indices[0]]
 		color2 = color_dict[c_indices[1]]
 			
-		var_index = ch_settings.variation%len(parts)
+		var_index = settings.variation%len(parts)
 		part_len = int(STRIP_LENGTH/parts[var_index])
 		color_diff = (color2[0]-color1[0], color2[1]-color1[1], color2[2]-color1[2]) 
 		
@@ -565,9 +565,9 @@ def color_transition_anim(e, strip_arr, ch_settings):
 				
 		pos += 1
 
-		time.sleep(TICK_LENGTH*10)
+		time.sleep(settings.tick_length*10)
 		
-def color_transition_full_anim(e, strip_arr, ch_settings):
+def color_transition_full_anim(e, strip_arr, settings):
 	print("color_transition_full_anim")
 	
 	parts = [2,4,6,8,10,20,30]
@@ -580,12 +580,12 @@ def color_transition_full_anim(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 		
-		c_indices = getColorIndices(ch_settings, default_c1, default_c2, 0)
+		c_indices = getColorIndices(settings, default_c1, default_c2, 0)
 		
 		color1 = color_dict[c_indices[0]]
 		color2 = color_dict[c_indices[1]]
 			
-		var_index = ch_settings.variation%len(parts)
+		var_index = settings.variation%len(parts)
 		part_len = int(STRIP_LENGTH/parts[var_index])
 		color_diff = (color2[0]-color1[0], color2[1]-color1[1], color2[2]-color1[2]) 
 
@@ -601,9 +601,9 @@ def color_transition_full_anim(e, strip_arr, ch_settings):
 				
 		pos += 1
 
-		time.sleep(TICK_LENGTH*10)
+		time.sleep(settings.tick_length*10)
 
-def rand_colors_distinct(e, strip_arr, ch_settings):
+def rand_colors_distinct(e, strip_arr, settings):
 	print("rand_colors_distinct")
 	#color_variation = [(3,11,19), (3,11), (11,19), (3,19), (3,23,27), (5,7,28,31), (2,3), (2,11), (2,19), (11,19,23), (3,11,23)]
 	number_variation = [2,3]
@@ -616,21 +616,21 @@ def rand_colors_distinct(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 		
-		c_indices = getColorIndices(ch_settings, default_c1, default_c2, default_c3)
+		c_indices = getColorIndices(settings, default_c1, default_c2, default_c3)
 		
 		color1 = color_dict[c_indices[0]]
 		color2 = color_dict[c_indices[1]]
 		color3 = color_dict[c_indices[2]]
 		
-		var_index = ch_settings.variation%len(number_variation)
+		var_index = settings.variation%len(number_variation)
 		
 		for i in range(STRIP_LENGTH):
 			color_index = random.randint(0, number_variation[var_index]-1)
 			strip_arr[i] = color_dict[c_indices[color_index]]
 
-		time.sleep(TICK_LENGTH*100)
+		time.sleep(settings.tick_length*100)
 
-def game_show(e, strip_arr, ch_settings):
+def game_show(e, strip_arr, settings):
 	print("game_show")
 	parts = [2,3,4,5,6,10]
 
@@ -638,7 +638,7 @@ def game_show(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 		
-		var_index = ch_settings.variation%len(parts)
+		var_index = settings.variation%len(parts)
 		part_len = int(STRIP_LENGTH/parts[var_index])
 		winner = random.randint(0, parts[var_index]-1)
 		restart = False
@@ -646,7 +646,7 @@ def game_show(e, strip_arr, ch_settings):
 		for rnd in range(40):
 			if e.isSet():
 				return
-			if ch_settings.variation%len(parts) != var_index:
+			if settings.variation%len(parts) != var_index:
 				restart = True
 				break
 			
@@ -659,7 +659,7 @@ def game_show(e, strip_arr, ch_settings):
 				strip_arr[part_len*part] = (255,0,0)
 				strip_arr[part_len*(part+1)-1] = (255,0,0)
 					
-			time.sleep(TICK_LENGTH*200)
+			time.sleep(settings.tick_length*200)
 		
 		if restart == True:
 			continue
@@ -674,10 +674,10 @@ def game_show(e, strip_arr, ch_settings):
 		for i in range(4): #mecessary to achieve quick return when requested
 			if e.isSet():
 				return	
-			if ch_settings.variation%len(parts) != var_index:
+			if settings.variation%len(parts) != var_index:
 				restart = True
 				break
-			time.sleep(TICK_LENGTH*500)
+			time.sleep(settings.tick_length*500)
 		
 		if restart == True:
 			continue
@@ -686,7 +686,7 @@ def game_show(e, strip_arr, ch_settings):
 		for rnd in range(50):
 			if e.isSet():
 				return	
-			if ch_settings.variation%len(parts) != var_index:
+			if settings.variation%len(parts) != var_index:
 				restart = True
 				break
 			for part in range(parts[var_index]):
@@ -703,7 +703,7 @@ def game_show(e, strip_arr, ch_settings):
 				strip_arr[part_len*part] = (255,0,0)
 				strip_arr[part_len*(part+1)-1] = (255,0,0)
 			
-			time.sleep(TICK_LENGTH*100)
+			time.sleep(settings.tick_length*100)
 		
 		if restart == True:
 			continue
@@ -718,9 +718,9 @@ def game_show(e, strip_arr, ch_settings):
 		for i in range(4): #mecessary to achieve quick return when requested
 			if e.isSet():
 				return				
-			time.sleep(TICK_LENGTH*500)
+			time.sleep(settings.tick_length*500)
 		
-def sunrise(e, strip_arr, ch_settings):
+def sunrise(e, strip_arr, settings):
 	print("sunrise")
 	
 	center_left = int((STRIP_LENGTH/2)-1)
@@ -758,11 +758,11 @@ def sunrise(e, strip_arr, ch_settings):
 			for i in range(10):
 				if e.isSet():
 					return
-				time.sleep(TICK_LENGTH*500)	
+				time.sleep(settings.tick_length*500)	
 			sun_radius = 0
 			red_radius = 1
 			
-		time.sleep(TICK_LENGTH*200)
+		time.sleep(settings.tick_length*200)
 
 def rainbow_wheel(pos, c1, c2, c3):
 	if pos < 1/3:
@@ -775,7 +775,7 @@ def rainbow_wheel(pos, c1, c2, c3):
 		mult = (pos-2/3)*3
 		return (int(c3[0]+(c1[0]-c3[0])*mult),int(c3[1]+(c1[1]-c3[1])*mult),int(c3[2]+(c1[2]-c3[2])*mult))
 	
-def rainbow_alt(e, strip_arr, ch_settings):
+def rainbow_alt(e, strip_arr, settings):
 	print("rainbow_alt")
 
 	default_c1 = 3
@@ -788,13 +788,13 @@ def rainbow_alt(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 
-		c_indices = getColorIndices(ch_settings, default_c1, default_c2, default_c3)
+		c_indices = getColorIndices(settings, default_c1, default_c2, default_c3)
 		
 		color1 = color_dict[c_indices[0]]
 		color2 = color_dict[c_indices[1]]
 		color3 = color_dict[c_indices[2]]
 		
-		var_index = ch_settings.variation%len(staggering)
+		var_index = settings.variation%len(staggering)
 		   
 		for i in range(STRIP_LENGTH):
 			perc = i/STRIP_LENGTH
@@ -802,9 +802,9 @@ def rainbow_alt(e, strip_arr, ch_settings):
 				perc -= perc%staggering[var_index]
 			strip_arr[i] = rainbow_wheel(perc, color1, color2, color3)
 			
-		time.sleep(TICK_LENGTH*100)
+		time.sleep(settings.tick_length*100)
 
-def rainbow_alt_anim(e, strip_arr, ch_settings):
+def rainbow_alt_anim(e, strip_arr, settings):
 	print("rainbow_alt_anim")
 	
 	default_c1 = 3
@@ -818,13 +818,13 @@ def rainbow_alt_anim(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 			
-		c_indices = getColorIndices(ch_settings, default_c1, default_c2, default_c3)
+		c_indices = getColorIndices(settings, default_c1, default_c2, default_c3)
 		
 		color1 = color_dict[c_indices[0]]
 		color2 = color_dict[c_indices[1]]
 		color3 = color_dict[c_indices[2]]
 
-		var_index = ch_settings.variation%len(staggering)
+		var_index = settings.variation%len(staggering)
 		   
 		for i in range(STRIP_LENGTH):
 			perc = i/STRIP_LENGTH
@@ -833,9 +833,9 @@ def rainbow_alt_anim(e, strip_arr, ch_settings):
 			strip_arr[(i+pos)%STRIP_LENGTH] = rainbow_wheel(perc, color1, color2, color3)
 		
 		pos += 1
-		time.sleep(TICK_LENGTH*10)
+		time.sleep(settings.tick_length*10)
 		
-def rainbow_fade_alt(e, strip_arr, ch_settings):
+def rainbow_fade_alt(e, strip_arr, settings):
 	print("rainbow_fade_alt")
 	
 	default_c1 = 3
@@ -849,13 +849,13 @@ def rainbow_fade_alt(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 			
-		c_indices = getColorIndices(ch_settings, default_c1, default_c2, default_c3)
+		c_indices = getColorIndices(settings, default_c1, default_c2, default_c3)
 		
 		color1 = color_dict[c_indices[0]]
 		color2 = color_dict[c_indices[1]]
 		color3 = color_dict[c_indices[2]]
 			
-		var_index = ch_settings.variation%len(staggering)
+		var_index = settings.variation%len(staggering)
 		
 		for i in range(STRIP_LENGTH):
 			temp_perc = perc/100
@@ -864,9 +864,9 @@ def rainbow_fade_alt(e, strip_arr, ch_settings):
 			strip_arr[i] = rainbow_wheel(temp_perc, color1, color2, color3)
 		
 		perc = (perc+1)%100
-		time.sleep(TICK_LENGTH*100)
+		time.sleep(settings.tick_length*100)
 
-def rainbow_center_alt(e, strip_arr, ch_settings):
+def rainbow_center_alt(e, strip_arr, settings):
 	print("rainbow_center_alt")
 	
 	default_c1 = 3
@@ -883,13 +883,13 @@ def rainbow_center_alt(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 			
-		c_indices = getColorIndices(ch_settings, default_c1, default_c2, default_c3)
+		c_indices = getColorIndices(settings, default_c1, default_c2, default_c3)
 		
 		color1 = color_dict[c_indices[0]]
 		color2 = color_dict[c_indices[1]]
 		color3 = color_dict[c_indices[2]]
 
-		var_index = ch_settings.variation%len(staggering)
+		var_index = settings.variation%len(staggering)
 		
 		for i in range(STRIP_LENGTH):
 			if i <= center_left:
@@ -909,9 +909,9 @@ def rainbow_center_alt(e, strip_arr, ch_settings):
 			
 
 		center_perc = (center_perc-0.4)%100
-		time.sleep(TICK_LENGTH*10)
+		time.sleep(settings.tick_length*10)
 
-def progress_bar(e, strip_arr, ch_settings):
+def progress_bar(e, strip_arr, settings):
 	print("progress_bar")
 	
 	#10sec, 30sec, 1min, 15min, 30min, 1h, 1,5h, 2h, 3h
@@ -926,9 +926,9 @@ def progress_bar(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 		
-		c_indices = getColorIndices(ch_settings, default_c1, default_c2, 0)
+		c_indices = getColorIndices(settings, default_c1, default_c2, 0)
 			
-		var_index = ch_settings.variation%len(time_variants)
+		var_index = settings.variation%len(time_variants)
 			
 		for i in range(STRIP_LENGTH):
 			strip_arr[i] = color_dict[c_indices[1]]
@@ -947,7 +947,7 @@ def progress_bar(e, strip_arr, ch_settings):
 		while True:
 			if e.isSet():
 				return
-			if ch_settings.variation%len(time_variants) != var_index:
+			if settings.variation%len(time_variants) != var_index:
 				progress = 0
 				restart = True
 				break
@@ -955,14 +955,14 @@ def progress_bar(e, strip_arr, ch_settings):
 				time_passed -= time_variants[var_index]/STRIP_LENGTH
 				break
 			
-			time_passed += TICK_LENGTH*100
-			time.sleep(TICK_LENGTH*100)
+			time_passed += settings.tick_length*100
+			time.sleep(settings.tick_length*20)
 		
 		if progress >= STRIP_LENGTH or restart:
 			progress = 0
 			time_passed = 0
 
-def flags(e, strip_arr, ch_settings):
+def flags(e, strip_arr, settings):
 	print("flags")
 	
 	flag = ((3,2,3),(1,3,25),(19,2,3),(11,2,3),(3,2,11),(2,11,3),(11,25,3),(19,2,26),(2,19,3),(11,1,2),(25,19,3),(3,11,26),(11,3,19),(3,24,19),(1,2,3))
@@ -971,7 +971,7 @@ def flags(e, strip_arr, ch_settings):
 		if e.isSet():
 			return
 			
-		var_index = ch_settings.variation%len(flag)
+		var_index = settings.variation%len(flag)
 		
 		third = int(STRIP_LENGTH/3)-1
 		twothirds = third + int(STRIP_LENGTH/3)
@@ -982,4 +982,4 @@ def flags(e, strip_arr, ch_settings):
 			strip_arr[i] = color_dict[flag[var_index][1]]
 		for i in range(twothirds, STRIP_LENGTH):
 			strip_arr[i] = color_dict[flag[var_index][0]]
-		time.sleep(TICK_LENGTH*100)
+		time.sleep(settings.tick_length*100)

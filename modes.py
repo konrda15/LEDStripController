@@ -5,7 +5,7 @@ import random
 import threading
 import colorsys
 
-TICK_LENGTH = 0.001
+STANDARD_TICK_LENGTH = 0.001
 STRIP_LENGTH = 180
 STRIP_MAX = 180
 STRIP_START = 0
@@ -18,7 +18,7 @@ def normal(e, mode_arr, mode_settings):
 		brightness = mode_settings.brightness
 		for i in range(STRIP_LENGTH):
 			mode_arr[i] = (brightness, brightness, brightness)
-		time.sleep(TICK_LENGTH*100)
+		time.sleep(STANDARD_TICK_LENGTH*100)
 
 def fade(e, mode_arr, mode_settings):
 	print("fade")
@@ -50,7 +50,7 @@ def fade(e, mode_arr, mode_settings):
 		elif(fade >= 1):
 			direction = abs(direction) * (-1)
 			
-		time.sleep(TICK_LENGTH*40)
+		time.sleep(STANDARD_TICK_LENGTH*40)
 
 
 def blinking(e, mode_arr, mode_settings):
@@ -67,7 +67,7 @@ def blinking(e, mode_arr, mode_settings):
 		for i in range(STRIP_LENGTH):
 			mode_arr[i] = (current_b,current_b,current_b)
 		
-		time.sleep(TICK_LENGTH*500)
+		time.sleep(STANDARD_TICK_LENGTH*500)
 
 def fast_blinking(e, mode_arr, mode_settings):
 	print("fast_blinking")
@@ -83,7 +83,7 @@ def fast_blinking(e, mode_arr, mode_settings):
 		for i in range(STRIP_LENGTH):
 			mode_arr[i] = (current_b,current_b,current_b)
 		
-		time.sleep(TICK_LENGTH*150)
+		time.sleep(STANDARD_TICK_LENGTH*150)
 
 def strobe(e, mode_arr, mode_settings):
 	print("strobe")
@@ -103,7 +103,7 @@ def strobe(e, mode_arr, mode_settings):
 		for i in range(STRIP_LENGTH):
 			mode_arr[i] = (current_b,current_b,current_b)
 		
-		time.sleep(TICK_LENGTH*25)
+		time.sleep(STANDARD_TICK_LENGTH*25)
 
 def adv_fade(e, mode_arr, mode_settings):
 	print("adv_fade")
@@ -136,4 +136,4 @@ def adv_fade(e, mode_arr, mode_settings):
 		
 		
 			
-		time.sleep(TICK_LENGTH*40)
+		time.sleep(STANDARD_TICK_LENGTH*40)

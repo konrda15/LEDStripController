@@ -10,7 +10,7 @@ from settings import *
 
 STRIP_MAX = 180
 STRIP_START = 0
-TICK_LENGTH = 0.001
+STANDARD_TICK_LENGTH = 0.001
 
 def draw_strip(e, strip_arr, mode_arr):
     while True:
@@ -20,7 +20,8 @@ def draw_strip(e, strip_arr, mode_arr):
             c = Color(int(strip_arr[i][0]*mode_arr[i][0]),int(strip_arr[i][1]*mode_arr[i][1]),int(strip_arr[i][2]*mode_arr[i][2]))
             strip.setPixelColor(i, c)
         strip.show()
-        time.sleep(TICK_LENGTH)
+        time.sleep(STANDARD_TICK_LENGTH)
+    
             
 if __name__ == '__main__':
     strip = Adafruit_NeoPixel(180, 18, 800000, 10, False, 255, 0)
@@ -32,8 +33,7 @@ if __name__ == '__main__':
         strip_arr.append([0,0,0])
         mode_arr.append([0,0,0])
     
-    ch_settings = ChSettings(0,0,0,0,0)
-    mode_settings = ModeSettings(0,1)
+    global_settings = Settings(0,STANDARD_TICK_LENGTH,0,0,0,0,1)
     
     dispatcher = {
         0: clear_strip,
@@ -86,9 +86,9 @@ if __name__ == '__main__':
     draw_thr = threading.Thread(target=draw_strip, args=(draw_e, strip_arr, mode_arr))
     draw_thr.start()
     
-    channel_thr = threading.Thread(target=dispatcher[index], args=(e,strip_arr, ch_settings))
+    channel_thr = threading.Thread(target=dispatcher[index], args=(e,strip_arr, global_settings))
     channel_thr.start()
-    mode_thr = threading.Thread(target=mode_dispatcher[mode_settings.mode], args=(mode_e, mode_arr, mode_settings))
+    mode_thr = threading.Thread(target=mode_dispatcher[global_settings.mode], args=(mode_e, mode_arr, global_settings))
     mode_thr.start()
         
     while True:
@@ -98,31 +98,39 @@ if __name__ == '__main__':
             e.set()
             channel_thr.join()
             e.clear()
-            channel_thr = threading.Thread(target=dispatcher[index], args=(e,strip_arr, ch_settings))
+            global_settings.reset()
+            channel_thr = threading.Thread(target=dispatcher[index], args=(e,strip_arr, global_settings))
             channel_thr.start()
         elif a == 'a':
             index = (index-1)%len(dispatcher)
             e.set()
             channel_thr.join()
             e.clear()
-            channel_thr = threading.Thread(target=dispatcher[index], args=(e,strip_arr, ch_settings))
+            global_settings.reset()
+            channel_thr = threading.Thread(target=dispatcher[index], args=(e,strip_arr, global_settings))
             channel_thr.start()
         elif a == 'w':
-            ch_settings.variation += 1
+            global_settings.variation += 1
         elif a == 's':
-            ch_settings.variation -= 1
+            global_settings.variation -= 1
+        elif a == 'j':
+            global_settings.tick_length = round(min(global_settings.tick_length+0.0002,0.005),4)
+            print("speed: ",  global_settings.tick_length)
+        elif a == 'k':
+            global_settings.tick_length = round(max(global_settings.tick_length-0.0002,0.0002),4)
+            print("speed: ",  global_settings.tick_length)
         elif a == 'q':
-            mode_settings.brightness = round(min(1, mode_settings.brightness+0.1),1)
-            print("brightness: ", mode_settings.brightness)
+            global_settings.brightness = round(min(1, global_settings.brightness+0.1),1)
+            print("brightness: ", global_settings.brightness)
         elif a == 'e':
-            mode_settings.brightness = round(max(0, mode_settings.brightness-0.1),1)
-            print("brightness: ", mode_settings.brightness)
+            global_settings.brightness = round(max(0, global_settings.brightness-0.1),1)
+            print("brightness: ", global_settings.brightness)
         elif a == 'm':
-            mode_settings.mode = (mode_settings.mode+1)%len(mode_dispatcher)
+            global_settings.mode = (global_settings.mode+1)%len(mode_dispatcher)
             mode_e.set()
             mode_thr.join()
             mode_e.clear()
-            mode_thr = threading.Thread(target=mode_dispatcher[mode_settings.mode], args=(mode_e,mode_arr, mode_settings))
+            mode_thr = threading.Thread(target=mode_dispatcher[global_settings.mode], args=(mode_e,mode_arr, global_settings))
             mode_thr.start()
         elif a == 'x':
             e.set()
@@ -153,13 +161,13 @@ if __name__ == '__main__':
                     continue
                     
                 if color_index == 1:
-                    ch_settings.color1 = color_dict_index
+                    global_settings.color1 = color_dict_index
                     print("color", color_index, " changed to ", color_dict_index)
                 elif color_index == 2:
-                    ch_settings.color2 = color_dict_index
+                    global_settings.color2 = color_dict_index
                     print("color", color_index, " changed to ", color_dict_index)
                 elif color_index == 3:
-                    ch_settings.color3 = color_dict_index
+                    global_settings.color3 = color_dict_index
                     print("color", color_index, " changed to ", color_dict_index)
             except:
                 print("invalid command")
@@ -172,7 +180,8 @@ if __name__ == '__main__':
                     e.set()
                     channel_thr.join()
                     e.clear()
-                    channel_thr = threading.Thread(target=dispatcher[index], args=(e,strip_arr, ch_settings))
+                    global_settings.reset()
+                    channel_thr = threading.Thread(target=dispatcher[index], args=(e,strip_arr, global_settings))
                     channel_thr.start()
             except:
                 print("invalid command")
