@@ -7,6 +7,8 @@ import colorsys
 from channels import *
 from modes import *
 from settings import *
+from sensor import *
+from multiprocessing import Process, Pipe
 
 STRIP_MAX = 180
 STRIP_START = 0
@@ -20,7 +22,7 @@ def draw_strip(e, strip_arr, mode_arr):
             c = Color(int(strip_arr[i][0]*mode_arr[i][0]),int(strip_arr[i][1]*mode_arr[i][1]),int(strip_arr[i][2]*mode_arr[i][2]))
             strip.setPixelColor(i, c)
         strip.show()
-        time.sleep(STANDARD_TICK_LENGTH)
+        time.sleep(STANDARD_TICK_LENGTH*10)
     
             
 if __name__ == '__main__':
@@ -80,17 +82,24 @@ if __name__ == '__main__':
     e = threading.Event()
     mode_e = threading.Event()
     draw_e = threading.Event()
+    sensor_e = threading.Event()
     index = len(dispatcher)-2
     
     
     draw_thr = threading.Thread(target=draw_strip, args=(draw_e, strip_arr, mode_arr))
     draw_thr.start()
+    #sensor_thr = threading.Thread(target=sensor_handler, args=(sensor_e, global_settings))
+    #sensor_thr.start()
     
     channel_thr = threading.Thread(target=dispatcher[index], args=(e,strip_arr, global_settings))
     channel_thr.start()
     mode_thr = threading.Thread(target=mode_dispatcher[global_settings.mode], args=(mode_e, mode_arr, global_settings))
     mode_thr.start()
-        
+    
+    main_conn, sensor_conn = Pipe()
+    p = Process(target=sensor_handler, args=(sensor_conn, global_settings))
+    p.start()
+    
     while True:
         a = input()
         if a == 'd':
@@ -136,9 +145,11 @@ if __name__ == '__main__':
             e.set()
             mode_e.set()
             draw_e.set()
+            main_conn.send("quit")
             channel_thr.join()
             mode_thr.join()
             draw_thr.join()
+            #sensor_thr.join()
             break
         elif 'c' in a: # valid input c103, c13 for primary color and third element in dict
             if len(a) < 3 or len(a) > 4:
