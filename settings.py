@@ -9,7 +9,7 @@ class Settings:
 		self.brightness = brightness #[0,1]
 		
 	def reset(self):
-		self.variation = 1
+		self.variation = 0
 		self.tick_length = 0.001 
 		self.color1 = 0
 		self.color2 = 0

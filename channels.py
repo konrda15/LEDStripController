@@ -67,7 +67,7 @@ def two_colors(e, strip_arr, settings):
 			strip_arr[i] = color_dict[c_indices[1]]
 		for i in range(half, STRIP_LENGTH):
 			strip_arr[i] = color_dict[c_indices[0]]
-		time.sleep(settings.settings.tick_length*100)
+		time.sleep(settings.tick_length*100)
         
 def three_colors(e, strip_arr, settings):
 	print("three_colors")
@@ -643,7 +643,7 @@ def game_show(e, strip_arr, settings):
 		winner = random.randint(0, parts[var_index]-1)
 		restart = False
 		
-		for rnd in range(40):
+		for rnd in range(30):
 			if e.isSet():
 				return
 			if settings.variation%len(parts) != var_index:
@@ -671,7 +671,7 @@ def game_show(e, strip_arr, settings):
 			strip_arr[part_len*part] = (255,0,0)
 			strip_arr[part_len*(part+1)-1] = (255,0,0)
 		
-		for i in range(4): #mecessary to achieve quick return when requested
+		for i in range(5): #mecessary to achieve quick return when requested
 			if e.isSet():
 				return	
 			if settings.variation%len(parts) != var_index:
@@ -983,3 +983,4 @@ def flags(e, strip_arr, settings):
 		for i in range(twothirds, STRIP_LENGTH):
 			strip_arr[i] = color_dict[flag[var_index][0]]
 		time.sleep(settings.tick_length*100)
+
