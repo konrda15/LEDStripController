@@ -3,15 +3,13 @@ from rpi_ws281x import *
 import argparse
 import random
 import threading
-import colorsys
+import logging
 from channels import *
 from modes import *
 from settings import *
 from sensor import *
 from multiprocessing import Process, Pipe
 
-STRIP_MAX = 180
-STRIP_START = 0
 STANDARD_TICK_LENGTH = 0.001
 
 def draw_strip(e, strip_arr, mode_arr):
@@ -49,18 +47,21 @@ def console_input(e, cmd):
         new_input_split = new_input.split()
         
         if len(new_input_split) == 1:
-            cmd[0] = (new_input_split[0], 0)
+            cmd[0] = (new_input_split[0], '0')
         elif len(new_input_split) == 2:
             if new_input_split[1].isnumeric():
                 cmd[0] = (new_input_split[0], new_input_split[1])
             else:
-                cmd[0] = (new_input_split[0], 0)
+                cmd[0] = (new_input_split[0], '0')
         else:
             print("invalid console input")
         
         time.sleep(STANDARD_TICK_LENGTH * 100)
             
 if __name__ == '__main__':
+    logging.basicConfig(filename='ledstrip.log', level=logging.DEBUG, format='%(asctime)s %(message)s')
+    logging.info('LEDStripController started')
+    
     strip = Adafruit_NeoPixel(180, 18, 800000, 10, False, 255, 0)
     strip.begin()
     
@@ -70,7 +71,7 @@ if __name__ == '__main__':
         strip_arr.append([0,0,0])
         mode_arr.append([0,0,0])
     
-    global_settings = Settings(0,STANDARD_TICK_LENGTH,0,0,0,0,1)
+    global_settings = Settings(0,STANDARD_TICK_LENGTH,0,0,0,1,0,1)
     
     dispatcher = {
         0: clear_strip,
@@ -117,30 +118,42 @@ if __name__ == '__main__':
     
     draw_thr = threading.Thread(target=draw_strip, args=(draw_e, strip_arr, mode_arr))
     draw_thr.start()
-
-    index = 1
+    if draw_thr.isAlive():
+        logging.info('draw_thr started')
     
-    channel_thr = threading.Thread(target=dispatcher[index], args=(e,strip_arr, global_settings))
+    channel_thr = threading.Thread(target=dispatcher[global_settings.channel], args=(e,strip_arr, global_settings))
     channel_thr.start()
+    if channel_thr.isAlive():
+        logging.info('channel_thr started')
+    
     mode_thr = threading.Thread(target=mode_dispatcher[global_settings.mode], args=(mode_e, mode_arr, global_settings))
     mode_thr.start()
-
+    if mode_thr.isAlive():
+        logging.info('mode_thr started')
+        
     main_conn, sensor_conn = Pipe()
     p = Process(target=if_sensor, args=(sensor_conn, global_settings))
     p.start()
+    if p.is_alive():
+        logging.info('sensor process started')
     
     cmd = []
     cmd.append(("", 0))
     
     sensor_thr = threading.Thread(target=sensor_handler, args=(sensor_handler_e, cmd))
     sensor_thr.start()
+    if sensor_thr.isAlive():
+        logging.info('sensor_thr started')
     
     console_thr = threading.Thread(target=console_input, args=(sensor_handler_e, cmd)) #use same event
     console_thr.start()
+    if console_thr.isAlive():
+        logging.info('console_thr started')
     
     while True:
         if cmd[0][0] is not "":
-            print("Input: ", cmd[0][0], ", Number: ", cmd[0][1])
+            temp_log_str = "Input: " + cmd[0][0] + ", Number: " + cmd[0][1]
+            logging.info(temp_log_str)
             cmd[0] = ("",0)
         else:
             time.sleep(STANDARD_TICK_LENGTH*100)
@@ -149,37 +162,59 @@ if __name__ == '__main__':
         input_number = cmd[0][1]
         
         if input_cmd == 'ch_up':
-            index = (index+1)%len(dispatcher)
+            global_settings.channel = (global_settings.channel+1)%len(dispatcher)
             e.set()
             channel_thr.join()
             e.clear()
             global_settings.reset()
-            channel_thr = threading.Thread(target=dispatcher[index], args=(e,strip_arr, global_settings))
+            channel_thr = threading.Thread(target=dispatcher[global_settings.channel], args=(e,strip_arr, global_settings))
             channel_thr.start()
+            
         elif input_cmd == 'ch_down':
-            index = (index-1)%len(dispatcher)
+            global_settings.channel = (global_settings.channel-1)%len(dispatcher)
             e.set()
             channel_thr.join()
             e.clear()
             global_settings.reset()
-            channel_thr = threading.Thread(target=dispatcher[index], args=(e,strip_arr, global_settings))
-            channel_thr.start()
+            channel_thr = threading.Thread(target=dispatcher[global_settings.channel], args=(e,strip_arr, global_settings))
+            channel_thr.start() 
+            
         elif input_cmd == 'var_up':
             global_settings.variation += 1
+            
+            temp_log_str = 'new variation: ' + str(global_settings.variation)
+            logging.info(temp_log_str)
+            
         elif input_cmd == 'var_down':
             global_settings.variation -= 1
+            
+            temp_log_str = 'new variation: ' + str(global_settings.variation)
+            logging.info(temp_log_str)
+            
         elif input_cmd == 's_down':
             global_settings.tick_length = round(min(global_settings.tick_length+0.0002,0.005),4)
-            print("speed: ",  global_settings.tick_length)
+            
+            temp_log_str = 'new speed: ' + str(global_settings.tick_length)
+            logging.info(temp_log_str)
+            
         elif input_cmd == 's_up':
             global_settings.tick_length = round(max(global_settings.tick_length-0.0002,0.0002),4)
-            print("speed: ",  global_settings.tick_length)
+            
+            temp_log_str = 'new speed: ' + str(global_settings.tick_length)
+            logging.info(temp_log_str)
+            
         elif input_cmd == 'b_up':
             global_settings.brightness = round(min(1, global_settings.brightness+0.1),1)
-            print("brightness: ", global_settings.brightness)
+            
+            temp_log_str = 'new brightness: ' + str(global_settings.brightness)
+            logging.info(temp_log_str)
+            
         elif input_cmd == 'b_down':
             global_settings.brightness = round(max(0, global_settings.brightness-0.1),1)
-            print("brightness: ", global_settings.brightness)
+            
+            temp_log_str = 'new brightness: ' + str(global_settings.brightness)
+            logging.info(temp_log_str)
+            
         elif input_cmd == 'm_up':
             global_settings.mode = (global_settings.mode+1)%len(mode_dispatcher)
             mode_e.set()
@@ -187,6 +222,7 @@ if __name__ == '__main__':
             mode_e.clear()
             mode_thr = threading.Thread(target=mode_dispatcher[global_settings.mode], args=(mode_e,mode_arr, global_settings))
             mode_thr.start()
+            
         elif input_cmd == 'm_down':
             global_settings.mode = (global_settings.mode-1)%len(mode_dispatcher)
             mode_e.set()
@@ -194,9 +230,10 @@ if __name__ == '__main__':
             mode_e.clear()
             mode_thr = threading.Thread(target=mode_dispatcher[global_settings.mode], args=(mode_e,mode_arr, global_settings))
             mode_thr.start()
+            
         elif input_cmd == 'ok':
             if len(input_number) == 0:
-                print("no channel number")
+                logging.info("input error: no channel number")
                 continue
             elif len(input_number) == 1:
                 new_ch = int(input_number)
@@ -204,43 +241,50 @@ if __name__ == '__main__':
                 new_ch = int(input_number[-2:])
                 
             if new_ch >= 0 and new_ch < len(dispatcher):
-                index = new_ch
+                global_settings.channel = new_ch
                 e.set()
                 channel_thr.join()
                 e.clear()
                 global_settings.reset()
-                channel_thr = threading.Thread(target=dispatcher[index], args=(e,strip_arr, global_settings))
+                channel_thr = threading.Thread(target=dispatcher[global_settings.channel], args=(e,strip_arr, global_settings))
                 channel_thr.start()
             else:
-                print("invalid channel")
+                logging.info("input error: invalid channel")
                 continue
+                
         elif input_cmd == 'color':
             if len(input_number) == 2:
                 new_col = int(input_number[-1:])
             elif len(input_number) > 2:
                 new_col = int(input_number[-2:])
             else:
-                print("invalid color")
+                logging.info("input error: invalid color")
                 continue
             color_index = int(input_number[0])
             if color_index < 1 or color_index > 3:
-                print("invalid color index")
+                logging.info("input error: invalid color index")
                 continue
             if new_col < 0 or new_col >= len(color_dict):
-                print("invalid color")
+                logging.info("input error: invalid color")
                 continue
             
             if color_index == 1:
                 global_settings.color1 = new_col
-                print("color", color_index, " changed to ", new_col)
+                temp_log_str = "color" + color_index + " changed to " + new_col
+                logging.info(temp_log_str)
             elif color_index == 2:
                 global_settings.color2 = new_col
-                print("color", color_index, " changed to ", new_col)
+                temp_log_str = "color" + color_index + " changed to " + new_col
+                logging.info(temp_log_str)
             elif color_index == 3:
                 global_settings.color3 = new_col
-                print("color", color_index, " changed to ", new_col)
+                temp_log_str = "color" + color_index + " changed to " + new_col
+                logging.info(temp_log_str)
+                
         elif input_cmd == 'reset':
             global_settings.reset()
+            logging.info('reset settings')
+            
         elif input_cmd == 'off' and input_number == '999':
             e.set()
             mode_e.set()
@@ -252,7 +296,9 @@ if __name__ == '__main__':
             draw_thr.join()
             sensor_thr.join()
             console_thr.join()
+            logging.info('quit LEDStripController')
             break
+            
         elif input_cmd == 'off':
             index = 0
             e.set()

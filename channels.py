@@ -4,6 +4,7 @@ import argparse
 import random
 import threading
 import colorsys
+import logging
 from colors import *
 
 
@@ -17,7 +18,7 @@ def hsv_rgb(h,s,v):
     return [c[0], c[1], c[2]]
 
 def clear_strip(e, strip_arr, settings):
-	print("clear_strip")
+	logging.info("started channel clear_strip")
 	for i in range(STRIP_LENGTH):
 		strip_arr[i] = (0,0,0)
 
@@ -34,7 +35,7 @@ def getColorIndices(settings, default_c1, default_c2, default_c3):
 	return (c1,c2,c3)
 
 def one_color(e, strip_arr, settings):
-	print("one_color")
+	logging.info("started channel one_color")
 	
 	default_c1 = 2
 	
@@ -51,7 +52,7 @@ def one_color(e, strip_arr, settings):
         
         
 def two_colors(e, strip_arr, settings):
-	print("two_colors")
+	logging.info("started channel two_colors")
 	
 	default_c1 = 3
 	default_c2 = 11
@@ -70,7 +71,7 @@ def two_colors(e, strip_arr, settings):
 		time.sleep(settings.tick_length*100)
         
 def three_colors(e, strip_arr, settings):
-	print("three_colors")
+	logging.info("started channel three_colors")
 	
 	default_c1 = 3
 	default_c2 = 11
@@ -94,7 +95,7 @@ def three_colors(e, strip_arr, settings):
 		time.sleep(settings.tick_length*100)
 
 def ping_pong(e, strip_arr, settings):
-	print("ping_pong")
+	logging.info("started channel ping_pong")
 	
 	default_c1 = 3
 	default_c2 = 1
@@ -130,7 +131,7 @@ def ping_pong(e, strip_arr, settings):
 		time.sleep(settings.tick_length*10)
 
 def travelling(e, strip_arr, settings):
-	print("travelling")
+	logging.info("started channel travelling")
 	
 	default_c1 = 3
 	default_c2 = 1
@@ -164,7 +165,7 @@ def travelling(e, strip_arr, settings):
 		time.sleep(settings.tick_length*10)
 
 def rainbow(e, strip_arr, settings):
-	print("rainbow")
+	logging.info("started channel rainbow")
 
 	staggering = [(1), (30), (60)]
 
@@ -183,7 +184,7 @@ def rainbow(e, strip_arr, settings):
 
 
 def rainbow_animation(e, strip_arr, settings):
-	print("rainbow_animation")
+	logging.info("started channel rainbow_animation")
 
 	staggering = [(1), (30), (60)]
 
@@ -204,7 +205,7 @@ def rainbow_animation(e, strip_arr, settings):
 		time.sleep(settings.tick_length*10)
         
 def rand_colors(e, strip_arr, settings):
-	print("rand_colors")
+	logging.info("started channel rand_colors")
 	ranges = [(0,360),(0,60),(40,120),(80,260),(240,360),(300,420),(300,500)]
 
 	while True:
@@ -219,7 +220,7 @@ def rand_colors(e, strip_arr, settings):
 		time.sleep(settings.tick_length*100)
 
 def rainbow_fade(e, strip_arr, settings):
-	print("rainbow_fade")
+	logging.info("started channel rainbow_fade")
 
 	staggering = [(1), (30), (60)]
 
@@ -239,7 +240,7 @@ def rainbow_fade(e, strip_arr, settings):
 		time.sleep(settings.tick_length*20)
 		
 def alternating(e, strip_arr, settings):
-	print("alternating")
+	logging.info("started channel alternating")
 
 	default_c1 = 2
 	default_c2 = 1
@@ -264,7 +265,7 @@ def alternating(e, strip_arr, settings):
 
 
 def alternating_blinking(e, strip_arr, settings):
-	print("alternating_blinking")
+	logging.info("started channel alternating_blinking")
 
 	staggering = [(2), (4), (6), (10), (20), (60), (STRIP_LENGTH)]
 	
@@ -291,7 +292,7 @@ def alternating_blinking(e, strip_arr, settings):
 		time.sleep(settings.tick_length*500)
 
 def alternating_travel(e, strip_arr, settings):
-	print("alternating_travel")
+	logging.info("started channel alternating_travel")
 
 	staggering = [(2), (4), (6), (10), (20), (60)]
 	
@@ -318,7 +319,7 @@ def alternating_travel(e, strip_arr, settings):
 		time.sleep(settings.tick_length*30)
 
 def rolling_ball(e, strip_arr, settings):
-	print("rolling_ball")
+	logging.info("started channel rolling_ball")
 	
 	default_c1 = 2
 	
@@ -386,7 +387,7 @@ def rolling_ball(e, strip_arr, settings):
 			time.sleep(settings.tick_length*500)
 
 def counter(e, strip_arr, settings):
-	print("counter")
+	logging.info("started channel counter")
 	
 	default_c1 = 2
 	
@@ -413,7 +414,7 @@ def counter(e, strip_arr, settings):
 
 #deprecated
 def rainbow_colors(e, strip_arr, settings):
-	print("rainbow_colors")
+	logging.info("started channel rainbow_colors")
 
 	hue_range = [(160,240),(100,240), (0,30)]
 
@@ -441,7 +442,7 @@ def rainbow_colors(e, strip_arr, settings):
 		time.sleep(settings.tick_length*10)
 
 def rainbow_center(e, strip_arr, settings):
-	print("rainbow_center")
+	logging.info("started channel rainbow_center")
 
 	staggering = [(1), (30), (60)]
 
@@ -472,7 +473,7 @@ def rainbow_center(e, strip_arr, settings):
 		time.sleep(settings.tick_length*10)
 
 def color_transition(e, strip_arr, settings):
-	print("color_transition")
+	logging.info("started channel color_transition")
 	
 	parts = [1,2,3,4,6,8,10,20,30]
 	default_c1 = 3
@@ -502,7 +503,7 @@ def color_transition(e, strip_arr, settings):
 		time.sleep(settings.tick_length*100)
 
 def color_transition_full(e, strip_arr, settings):
-	print("color_transition_full")
+	logging.info("started channel color_transition_full")
 	
 	parts = [1,2,3,4,6,8,10,20,30]
 	default_c1 = 3
@@ -536,7 +537,7 @@ def color_transition_full(e, strip_arr, settings):
 		time.sleep(settings.tick_length*100)
 
 def color_transition_anim(e, strip_arr, settings):
-	print("color_transition_anim")
+	logging.info("started channel color_transition_anim")
 	
 	parts = [1,2,3,4,6,8,10,20,30]
 	
@@ -568,7 +569,7 @@ def color_transition_anim(e, strip_arr, settings):
 		time.sleep(settings.tick_length*10)
 		
 def color_transition_full_anim(e, strip_arr, settings):
-	print("color_transition_full_anim")
+	logging.info("started channel color_transition_full_anim")
 	
 	parts = [2,4,6,8,10,20,30]
 	
@@ -604,7 +605,7 @@ def color_transition_full_anim(e, strip_arr, settings):
 		time.sleep(settings.tick_length*10)
 
 def rand_colors_distinct(e, strip_arr, settings):
-	print("rand_colors_distinct")
+	logging.info("started channel rand_colors_distinct")
 	#color_variation = [(3,11,19), (3,11), (11,19), (3,19), (3,23,27), (5,7,28,31), (2,3), (2,11), (2,19), (11,19,23), (3,11,23)]
 	number_variation = [2,3]
 	
@@ -631,7 +632,7 @@ def rand_colors_distinct(e, strip_arr, settings):
 		time.sleep(settings.tick_length*100)
 
 def game_show(e, strip_arr, settings):
-	print("game_show")
+	logging.info("started channel game_show")
 	parts = [2,3,4,5,6,10]
 
 	while True:
@@ -721,7 +722,7 @@ def game_show(e, strip_arr, settings):
 			time.sleep(settings.tick_length*500)
 		
 def sunrise(e, strip_arr, settings):
-	print("sunrise")
+	logging.info("started channel sunrise")
 	
 	center_left = int((STRIP_LENGTH/2)-1)
 	center_right = int((STRIP_LENGTH/2))
@@ -776,7 +777,7 @@ def rainbow_wheel(pos, c1, c2, c3):
 		return (int(c3[0]+(c1[0]-c3[0])*mult),int(c3[1]+(c1[1]-c3[1])*mult),int(c3[2]+(c1[2]-c3[2])*mult))
 	
 def rainbow_alt(e, strip_arr, settings):
-	print("rainbow_alt")
+	logging.info("started channel rainbow_alt")
 
 	default_c1 = 3
 	default_c2 = 11
@@ -805,7 +806,7 @@ def rainbow_alt(e, strip_arr, settings):
 		time.sleep(settings.tick_length*100)
 
 def rainbow_alt_anim(e, strip_arr, settings):
-	print("rainbow_alt_anim")
+	logging.info("started channel rainbow_alt_anim")
 	
 	default_c1 = 3
 	default_c2 = 11
@@ -836,7 +837,7 @@ def rainbow_alt_anim(e, strip_arr, settings):
 		time.sleep(settings.tick_length*10)
 		
 def rainbow_fade_alt(e, strip_arr, settings):
-	print("rainbow_fade_alt")
+	logging.info("started channel rainbow_fade_alt")
 	
 	default_c1 = 3
 	default_c2 = 11
@@ -867,7 +868,7 @@ def rainbow_fade_alt(e, strip_arr, settings):
 		time.sleep(settings.tick_length*100)
 
 def rainbow_center_alt(e, strip_arr, settings):
-	print("rainbow_center_alt")
+	logging.info("started channel rainbow_center_alt")
 	
 	default_c1 = 3
 	default_c2 = 11
@@ -912,7 +913,7 @@ def rainbow_center_alt(e, strip_arr, settings):
 		time.sleep(settings.tick_length*10)
 
 def progress_bar(e, strip_arr, settings):
-	print("progress_bar")
+	logging.info("started channel progress_bar")
 	
 	#10sec, 30sec, 1min, 15min, 30min, 1h, 1,5h, 2h, 3h
 	time_variants = [10,30,60,15*60,30*60,60*60,60*90,60*120,60*180]
@@ -963,7 +964,7 @@ def progress_bar(e, strip_arr, settings):
 			time_passed = 0
 
 def flags(e, strip_arr, settings):
-	print("flags")
+	logging.info("started channel flags")
 	
 	flag = ((3,2,3),(1,3,25),(19,2,3),(11,2,3),(3,2,11),(2,11,3),(11,25,3),(19,2,26),(2,19,3),(11,1,2),(25,19,3),(3,11,26),(11,3,19),(3,24,19),(1,2,3))
 	

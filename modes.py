@@ -4,6 +4,7 @@ import argparse
 import random
 import threading
 import colorsys
+import logging
 
 STANDARD_TICK_LENGTH = 0.001
 STRIP_LENGTH = 180
@@ -11,7 +12,7 @@ STRIP_MAX = 180
 STRIP_START = 0
 
 def normal(e, mode_arr, mode_settings):
-	print("normal")
+	logging.info("new mode: normal")
 	while True:
 		if e.isSet():
 			return
@@ -21,7 +22,7 @@ def normal(e, mode_arr, mode_settings):
 		time.sleep(STANDARD_TICK_LENGTH*100)
 
 def fade(e, mode_arr, mode_settings):
-	print("fade")
+	logging.info("new mode: fade")
 	brightness = mode_settings.brightness
 	
 	fade = 1
@@ -54,7 +55,7 @@ def fade(e, mode_arr, mode_settings):
 
 
 def blinking(e, mode_arr, mode_settings):
-	print("blinking")
+	logging.info("new mode: blinking")
 	brightness = mode_settings.brightness
 	
 	on_off = 0 
@@ -70,7 +71,7 @@ def blinking(e, mode_arr, mode_settings):
 		time.sleep(STANDARD_TICK_LENGTH*500)
 
 def fast_blinking(e, mode_arr, mode_settings):
-	print("fast_blinking")
+	logging.info("new mode: fast_blinking")
 	brightness = mode_settings.brightness
 	
 	on_off = 0 
@@ -86,7 +87,7 @@ def fast_blinking(e, mode_arr, mode_settings):
 		time.sleep(STANDARD_TICK_LENGTH*150)
 
 def strobe(e, mode_arr, mode_settings):
-	print("strobe")
+	logging.info("new mode: strobe")
 	brightness = mode_settings.brightness
 	
 	on_off = 0 
@@ -106,7 +107,7 @@ def strobe(e, mode_arr, mode_settings):
 		time.sleep(STANDARD_TICK_LENGTH*25)
 
 def adv_fade(e, mode_arr, mode_settings):
-	print("adv_fade")
+	logging.info("new mode: adv_fade")
 	brightness = mode_settings.brightness
 	
 	fade = 1
@@ -133,7 +134,5 @@ def adv_fade(e, mode_arr, mode_settings):
 		for i in range(STRIP_LENGTH):
 			mode_arr[i] = (current_b,current_b,current_b)
 			
-		
-		
-			
+
 		time.sleep(STANDARD_TICK_LENGTH*40)
