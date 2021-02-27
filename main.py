@@ -12,14 +12,22 @@ from multiprocessing import Process, Pipe
 
 STANDARD_TICK_LENGTH = 0.001
 
-def draw_strip(e, strip_arr, mode_arr):
+def draw_strip(e, pause_e, strip_arr, mode_arr, global_settings):
     while True:
         if e.isSet():
             return
-        for i in range(strip.numPixels()):
+            
+        pause_e.wait()
+        numPixels = strip.numPixels()
+            
+        for i in range(numPixels):
             c = Color(int(strip_arr[i][0]*mode_arr[i][0]),int(strip_arr[i][1]*mode_arr[i][1]),int(strip_arr[i][2]*mode_arr[i][2]))
-            strip.setPixelColor(i, c)
+            if global_settings.reverse:
+                strip.setPixelColor(i, c)
+            else:
+                strip.setPixelColor(numPixels-1-i, c)
         strip.show()
+        
         time.sleep(STANDARD_TICK_LENGTH*10)
 
         
@@ -62,7 +70,7 @@ if __name__ == '__main__':
     logging.basicConfig(filename='ledstrip.log', level=logging.DEBUG, format='%(asctime)s %(message)s')
     logging.info('LEDStripController started')
     
-    strip = Adafruit_NeoPixel(180, 18, 800000, 10, False, 255, 0)
+    strip = Adafruit_NeoPixel(144, 18, 800000, 10, False, 255, 0)
     strip.begin()
     
     strip_arr = []
@@ -71,7 +79,7 @@ if __name__ == '__main__':
         strip_arr.append([0,0,0])
         mode_arr.append([0,0,0])
     
-    global_settings = Settings(0,STANDARD_TICK_LENGTH,0,0,0,1,0,1)
+    global_settings = Settings(0,STANDARD_TICK_LENGTH,0,0,0,1,0,1,False)
     
     dispatcher = {
         0: clear_strip,
@@ -114,9 +122,10 @@ if __name__ == '__main__':
     mode_e = threading.Event()
     draw_e = threading.Event()
     sensor_handler_e = threading.Event()
-
+    pause_e = threading.Event()
+    pause_e.set()
     
-    draw_thr = threading.Thread(target=draw_strip, args=(draw_e, strip_arr, mode_arr))
+    draw_thr = threading.Thread(target=draw_strip, args=(draw_e, pause_e, strip_arr, mode_arr, global_settings))
     draw_thr.start()
     if draw_thr.isAlive():
         logging.info('draw_thr started')
@@ -166,7 +175,7 @@ if __name__ == '__main__':
             e.set()
             channel_thr.join()
             e.clear()
-            global_settings.reset()
+            global_settings.variation = 0
             channel_thr = threading.Thread(target=dispatcher[global_settings.channel], args=(e,strip_arr, global_settings))
             channel_thr.start()
             
@@ -175,7 +184,7 @@ if __name__ == '__main__':
             e.set()
             channel_thr.join()
             e.clear()
-            global_settings.reset()
+            global_settings.variation = 0
             channel_thr = threading.Thread(target=dispatcher[global_settings.channel], args=(e,strip_arr, global_settings))
             channel_thr.start() 
             
@@ -245,7 +254,7 @@ if __name__ == '__main__':
                 e.set()
                 channel_thr.join()
                 e.clear()
-                global_settings.reset()
+                global_settings.variation = 0
                 channel_thr = threading.Thread(target=dispatcher[global_settings.channel], args=(e,strip_arr, global_settings))
                 channel_thr.start()
             else:
@@ -270,21 +279,36 @@ if __name__ == '__main__':
             
             if color_index == 1:
                 global_settings.color1 = new_col
-                temp_log_str = "color" + color_index + " changed to " + new_col
+                temp_log_str = "color" + str(color_index) + " changed to " + str(new_col)
                 logging.info(temp_log_str)
             elif color_index == 2:
                 global_settings.color2 = new_col
-                temp_log_str = "color" + color_index + " changed to " + new_col
+                temp_log_str = "color" + str(color_index) + " changed to " + str(new_col)
                 logging.info(temp_log_str)
             elif color_index == 3:
                 global_settings.color3 = new_col
-                temp_log_str = "color" + color_index + " changed to " + new_col
+                temp_log_str = "color" + str(color_index) + " changed to " + str(new_col)
                 logging.info(temp_log_str)
                 
         elif input_cmd == 'reset':
             global_settings.reset()
             logging.info('reset settings')
-            
+        
+        elif input_cmd == 'pause':
+            pause_e.clear()
+            logging.info('pause') 
+        
+        elif input_cmd == 'play':
+            pause_e.set()
+            logging.info('play') 
+         
+        elif input_cmd == 'reverse':
+            if global_settings.reverse:
+                global_settings.reverse = False
+            else:
+                global_settings.reverse = True
+            logging.info('reverse') 
+               
         elif input_cmd == 'off' and input_number == '999':
             e.set()
             mode_e.set()

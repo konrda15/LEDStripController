@@ -8,8 +8,8 @@ import logging
 from colors import *
 
 
-STRIP_LENGTH = 180
-STRIP_MAX = 180
+STRIP_LENGTH = 144
+STRIP_MAX = 144
 STRIP_START = 0
 
 
@@ -337,8 +337,8 @@ def rolling_ball(e, strip_arr, settings):
 		if e.isSet():
 				return
 				
-		speed = random.randint(100, 600) #leds per second
-		decel = random.uniform(0.3,0.5) #per second
+		speed = random.randint(300, 800) #leds per second
+		decel = random.uniform(0.2,0.6) #per second
 		direction = random.randint(0,1)
 		if direction == 0:
 			direction = -1
@@ -371,7 +371,7 @@ def rolling_ball(e, strip_arr, settings):
 			strip_arr[center_right] = (255,0,0)
 			
 			speed = speed - speed * (decel/100)
-			if speed <= 0.5:
+			if speed <= 0.75:
 				break
 			
 			time.sleep(settings.tick_length*10)
@@ -644,7 +644,7 @@ def game_show(e, strip_arr, settings):
 		winner = random.randint(0, parts[var_index]-1)
 		restart = False
 		
-		for rnd in range(30):
+		for rnd in range(35):
 			if e.isSet():
 				return
 			if settings.variation%len(parts) != var_index:
@@ -672,7 +672,7 @@ def game_show(e, strip_arr, settings):
 			strip_arr[part_len*part] = (255,0,0)
 			strip_arr[part_len*(part+1)-1] = (255,0,0)
 		
-		for i in range(5): #mecessary to achieve quick return when requested
+		for i in range(8): #mecessary to achieve quick return when requested
 			if e.isSet():
 				return	
 			if settings.variation%len(parts) != var_index:
@@ -966,7 +966,7 @@ def progress_bar(e, strip_arr, settings):
 def flags(e, strip_arr, settings):
 	logging.info("started channel flags")
 	
-	flag = ((3,2,3),(1,3,25),(19,2,3),(11,2,3),(3,2,11),(2,11,3),(11,25,3),(19,2,26),(2,19,3),(11,1,2),(25,19,3),(3,11,26),(11,3,19),(3,24,19),(1,2,3))
+	flag = ((3,2,3),(1,3,25),(19,2,3),(11,2,3),(3,2,11),(2,11,3),(11,25,3),(19,2,26),(2,19,3),(11,1,2),(25,19,3),(3,11,26),(11,3,19),(3,24,19), (3,1,19) ,(1,2,3))
 	
 	while True:
 		if e.isSet():
