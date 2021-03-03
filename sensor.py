@@ -1,11 +1,5 @@
-#---------------------------------------------------------------------#
-#Name - IR&NECDataCollect.py
-#Description - Reads data from the IR sensor but uses the official NEC Protocol (command line version)
-#Author - Lime Parallelogram
-#Licence - Attribution Lime
-#Date - 06/07/19 - 18/08/19
-#---------------------------------------------------------------------#
-#Imports modules
+#mostly copied from Lime Parallelogram
+
 import RPi.GPIO as GPIO
 import time
 from datetime import datetime

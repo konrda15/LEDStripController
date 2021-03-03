@@ -19,7 +19,7 @@ def normal(e, mode_arr, mode_settings):
 		brightness = mode_settings.brightness
 		for i in range(STRIP_LENGTH):
 			mode_arr[i] = (brightness, brightness, brightness)
-		time.sleep(STANDARD_TICK_LENGTH*100)
+		time.sleep(STANDARD_TICK_LENGTH*500)
 
 def fade(e, mode_arr, mode_settings):
 	logging.info("new mode: fade")

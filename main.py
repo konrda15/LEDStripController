@@ -28,7 +28,10 @@ def draw_strip(e, pause_e, strip_arr, mode_arr, global_settings):
                 strip.setPixelColor(numPixels-1-i, c)
         strip.show()
         
-        time.sleep(STANDARD_TICK_LENGTH*10)
+        if(global_settings.channel <= 3 and global_settings.mode == 0):
+            time.sleep(STANDARD_TICK_LENGTH*500)
+        else:
+            time.sleep(STANDARD_TICK_LENGTH*10)
 
         
 def sensor_handler(e, cmd):

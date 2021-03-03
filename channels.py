@@ -48,7 +48,7 @@ def one_color(e, strip_arr, settings):
 		for i in range(STRIP_LENGTH):
 			strip_arr[i] = color_dict[c_indices[0]]
 
-		time.sleep(settings.tick_length*100)
+		time.sleep(settings.tick_length*250)
         
         
 def two_colors(e, strip_arr, settings):
@@ -68,7 +68,7 @@ def two_colors(e, strip_arr, settings):
 			strip_arr[i] = color_dict[c_indices[1]]
 		for i in range(half, STRIP_LENGTH):
 			strip_arr[i] = color_dict[c_indices[0]]
-		time.sleep(settings.tick_length*100)
+		time.sleep(settings.tick_length*250)
         
 def three_colors(e, strip_arr, settings):
 	logging.info("started channel three_colors")
@@ -92,7 +92,7 @@ def three_colors(e, strip_arr, settings):
 			strip_arr[i] = color_dict[c_indices[1]]
 		for i in range(twothirds, STRIP_LENGTH):
 			strip_arr[i] = color_dict[c_indices[0]]
-		time.sleep(settings.tick_length*100)
+		time.sleep(settings.tick_length*250)
 
 def ping_pong(e, strip_arr, settings):
 	logging.info("started channel ping_pong")
@@ -983,5 +983,5 @@ def flags(e, strip_arr, settings):
 			strip_arr[i] = color_dict[flag[var_index][1]]
 		for i in range(twothirds, STRIP_LENGTH):
 			strip_arr[i] = color_dict[flag[var_index][0]]
-		time.sleep(settings.tick_length*100)
+		time.sleep(settings.tick_length*250)
 
