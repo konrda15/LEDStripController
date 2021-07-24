@@ -9,8 +9,9 @@ from modes import *
 from settings import *
 from sensor import *
 from multiprocessing import Process, Pipe
+from globalsettings import STANDARD_TICK_LENGTH, STRIP_LENGTH, STRIP_SEGMENTS
 
-STANDARD_TICK_LENGTH = 0.001
+#STANDARD_TICK_LENGTH = 0.001
 
 def draw_strip(e, pause_e, strip_arr, mode_arr, global_settings):
     while True:
@@ -68,6 +69,17 @@ def console_input(e, cmd):
             print("invalid console input")
         
         time.sleep(STANDARD_TICK_LENGTH * 100)
+   
+ 
+def set_segments():
+    STRIP_SEGMENTS = []
+    
+    for y in range(1, STRIP_LENGTH):
+        if STRIP_LENGTH%y==0:
+            STRIP_SEGMENTS.append(y)
+                
+    print(STRIP_SEGMENTS)
+   
             
 if __name__ == '__main__':
     logging.basicConfig(filename='ledstrip.log', level=logging.DEBUG, format='%(asctime)s %(message)s')
@@ -83,6 +95,7 @@ if __name__ == '__main__':
         mode_arr.append([0,0,0])
     
     global_settings = Settings(0,STANDARD_TICK_LENGTH,0,0,0,1,0,1,False)
+    set_segments()
     
     dispatcher = {
         0: clear_strip,

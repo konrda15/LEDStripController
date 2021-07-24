@@ -5,11 +5,10 @@ import random
 import threading
 import colorsys
 import logging
+from globalsettings import STANDARD_TICK_LENGTH, STRIP_LENGTH, STRIP_SEGMENTS
 
-STANDARD_TICK_LENGTH = 0.001
-STRIP_LENGTH = 180
-STRIP_MAX = 180
-STRIP_START = 0
+#STANDARD_TICK_LENGTH = 0.001
+#STRIP_LENGTH = 144
 
 def normal(e, mode_arr, mode_settings):
 	logging.info("new mode: normal")

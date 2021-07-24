@@ -97,7 +97,7 @@ def getData(): #Pulls data from sensor
                 
     if len(str(binary)) > 34: #Sometimes the binary has two rouge charactes on the end
         binary = int(str(binary)[:34])
-        
+    #print(binary)
     return binary
 	
 
@@ -115,8 +115,9 @@ def if_sensor(sensor_conn, settings):
             sensor_conn.send(key_codes[command])
             time.sleep(0.2)
         except:
+            #print("not found ", command)
             pass
-            #print("not found")
+            
 
     GPIO.cleanup()
 
