@@ -9,7 +9,7 @@ from modes import *
 from settings import *
 from sensor import *
 from multiprocessing import Process, Pipe
-from globalsettings import STANDARD_TICK_LENGTH, STRIP_LENGTH, STRIP_SEGMENTS
+from globalsettings import *
 
 #STANDARD_TICK_LENGTH = 0.001
 
@@ -70,15 +70,7 @@ def console_input(e, cmd):
         
         time.sleep(STANDARD_TICK_LENGTH * 100)
    
- 
-def set_segments():
-    STRIP_SEGMENTS = []
-    
-    for y in range(1, STRIP_LENGTH):
-        if STRIP_LENGTH%y==0:
-            STRIP_SEGMENTS.append(y)
-                
-    print(STRIP_SEGMENTS)
+
    
             
 if __name__ == '__main__':
@@ -94,19 +86,19 @@ if __name__ == '__main__':
         strip_arr.append([0,0,0])
         mode_arr.append([0,0,0])
     
-    global_settings = Settings(0,STANDARD_TICK_LENGTH,0,0,0,1,0,1,False)
-    set_segments()
+    global_settings = Settings(0,STANDARD_TICK_LENGTH,0,0,0,1,0,1,False,0)
+    
     
     dispatcher = {
         0: clear_strip,
         1: one_color, 
         2: two_colors, 
         3: three_colors, 
-        4: alternating,
-        5: alternating_blinking,
-        6: alternating_travel,
-        7: ping_pong,
-        8: travelling,
+        4: four_colors,
+        5: two_colors_anim,
+        6: three_colors_anim,
+        7: four_colors_anim,
+        8: two_color_transition,
         9: progress_bar,
         10: counter,
         11: rainbow_alt,
@@ -192,6 +184,7 @@ if __name__ == '__main__':
             channel_thr.join()
             e.clear()
             global_settings.variation = 0
+            global_settings.segment = 0
             channel_thr = threading.Thread(target=dispatcher[global_settings.channel], args=(e,strip_arr, global_settings))
             channel_thr.start()
             
@@ -201,6 +194,7 @@ if __name__ == '__main__':
             channel_thr.join()
             e.clear()
             global_settings.variation = 0
+            global_settings.segment = 0
             channel_thr = threading.Thread(target=dispatcher[global_settings.channel], args=(e,strip_arr, global_settings))
             channel_thr.start() 
             
@@ -214,6 +208,18 @@ if __name__ == '__main__':
             global_settings.variation -= 1
             
             temp_log_str = 'new variation: ' + str(global_settings.variation)
+            logging.info(temp_log_str)
+                
+        elif input_cmd == 'seg_up':
+            global_settings.segment += 1
+            
+            temp_log_str = 'new segment: ' + str(global_settings.segment)
+            logging.info(temp_log_str)
+            
+        elif input_cmd == 'seg_down':
+            global_settings.segment -= 1
+            
+            temp_log_str = 'new segment: ' + str(global_settings.segment)
             logging.info(temp_log_str)
             
         elif input_cmd == 's_down':
@@ -271,6 +277,7 @@ if __name__ == '__main__':
                 channel_thr.join()
                 e.clear()
                 global_settings.variation = 0
+                global_settings.segment = 0
                 channel_thr = threading.Thread(target=dispatcher[global_settings.channel], args=(e,strip_arr, global_settings))
                 channel_thr.start()
             else:

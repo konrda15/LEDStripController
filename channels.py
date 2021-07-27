@@ -7,8 +7,9 @@ import colorsys
 import logging
 from colors import *
 
+from globalsettings import *
 
-STRIP_LENGTH = 144
+#STRIP_LENGTH = 144
 STRIP_MAX = 144
 STRIP_START = 0
 
@@ -60,15 +61,21 @@ def two_colors(e, strip_arr, settings):
 	while True:
 		if e.isSet():
 			return
-			
+
+		seg_index = settings.segment%len(STRIP_SEGMENTS2)
 		c_indices = getColorIndices(settings, default_c1, default_c2, 0)
-			
-		half = int(STRIP_LENGTH/2)-1
-		for i in range(0, half):
-			strip_arr[i] = color_dict[c_indices[1]]
-		for i in range(half, STRIP_LENGTH):
-			strip_arr[i] = color_dict[c_indices[0]]
-		time.sleep(settings.tick_length*250)
+		
+		seg_length = int(STRIP_LENGTH/STRIP_SEGMENTS2[seg_index])
+		half = int(seg_length/2)
+		
+		for s in range(STRIP_SEGMENTS2[seg_index]):		
+			for i in range(0, half):
+				strip_arr[i+s*seg_length] = color_dict[c_indices[1]]
+			for i in range(half, seg_length):
+				strip_arr[i+s*seg_length] = color_dict[c_indices[0]]
+		time.sleep(settings.tick_length*100)
+		
+	
         
 def three_colors(e, strip_arr, settings):
 	logging.info("started channel three_colors")
@@ -81,18 +88,298 @@ def three_colors(e, strip_arr, settings):
 		if e.isSet():
 			return
 			
+		seg_index = settings.segment%len(STRIP_SEGMENTS3)
 		c_indices = getColorIndices(settings, default_c1, default_c2, default_c3)
-			
-		third = int(STRIP_LENGTH/3)-1
-		twothirds = third + int(STRIP_LENGTH/3)
 
-		for i in range(0, third):
-			strip_arr[i] = color_dict[c_indices[2]]
-		for i in range(third, twothirds):
-			strip_arr[i] = color_dict[c_indices[1]]
-		for i in range(twothirds, STRIP_LENGTH):
-			strip_arr[i] = color_dict[c_indices[0]]
-		time.sleep(settings.tick_length*250)
+		seg_length = int(STRIP_LENGTH/STRIP_SEGMENTS3[seg_index])
+		third = int(seg_length/3)
+		twothirds = third + int(seg_length/3)
+		
+		for s in range(STRIP_SEGMENTS3[seg_index]):
+			
+			for i in range(0, third):
+				strip_arr[i+s*seg_length] = color_dict[c_indices[2]]
+			for i in range(third, twothirds):
+				strip_arr[i+s*seg_length] = color_dict[c_indices[1]]
+			for i in range(twothirds, seg_length):
+				strip_arr[i+s*seg_length] = color_dict[c_indices[0]]
+				
+		time.sleep(settings.tick_length*100)
+		
+		
+def four_colors(e, strip_arr, settings):
+	logging.info("started channel four_colors")
+	
+	default_c1 = 3
+	default_c2 = 11
+	default_c3 = 19
+	fixed_c4 = 1
+	
+	while True:
+		if e.isSet():
+			return
+			
+		seg_index = settings.segment%len(STRIP_SEGMENTS4)
+		c_indices = getColorIndices(settings, default_c1, default_c2, default_c3)
+
+		seg_length = int(STRIP_LENGTH/STRIP_SEGMENTS4[seg_index])
+		quarter1 = int(seg_length/4)
+		quarter2 = quarter1 + int(seg_length/4)
+		quarter3 = quarter2 + int(seg_length/4)
+		
+		for s in range(STRIP_SEGMENTS4[seg_index]):
+			
+			for i in range(0, quarter1):
+				strip_arr[i+s*seg_length] = color_dict[fixed_c4]
+			for i in range(quarter1, quarter2):
+				strip_arr[i+s*seg_length] = color_dict[c_indices[2]]
+			for i in range(quarter2, quarter3):
+				strip_arr[i+s*seg_length] = color_dict[c_indices[1]]
+			for i in range(quarter3, seg_length):
+				strip_arr[i+s*seg_length] = color_dict[c_indices[0]]
+				
+		time.sleep(settings.tick_length*100)
+
+def two_colors_anim(e, strip_arr, settings):
+	logging.info("started channel two_colors_anim")
+
+	
+	default_c1 = 2
+	default_c2 = 1
+	
+	pos = 0
+	while True:
+		if e.isSet():
+			return
+			
+		seg_index = settings.segment%len(STRIP_SEGMENTS2)
+		c_indices = getColorIndices(settings, default_c1, default_c2, 0)
+		var_index = settings.variation%2
+		
+		seg_length = int(STRIP_LENGTH/STRIP_SEGMENTS2[seg_index])
+		half = int(seg_length/2)
+		
+		for s in range(STRIP_SEGMENTS2[seg_index]):		
+			for i in range(0, half):
+				index = (i+s*seg_length+pos)%STRIP_LENGTH
+				strip_arr[index] = color_dict[c_indices[1]]
+			for i in range(half, seg_length):
+				index = (i+s*seg_length+pos)%STRIP_LENGTH
+				strip_arr[index] = color_dict[c_indices[0]]
+		if var_index == 0:
+			pos = (pos+1)%STRIP_LENGTH
+			time.sleep(settings.tick_length*30)
+		else:
+			pos = (pos+int(seg_length/2))%STRIP_LENGTH
+			pos -= pos%int(seg_length/2)
+			time.sleep(settings.tick_length*500)
+		
+		
+
+def three_colors_anim(e, strip_arr, settings):
+	logging.info("started channel three_colors_anim")
+	
+	default_c1 = 3
+	default_c2 = 11
+	default_c3 = 19
+	
+	pos = 0
+	while True:
+		if e.isSet():
+			return
+			
+		seg_index = settings.segment%len(STRIP_SEGMENTS3)
+		c_indices = getColorIndices(settings, default_c1, default_c2, default_c3)
+		var_index = settings.variation%3
+
+		seg_length = int(STRIP_LENGTH/STRIP_SEGMENTS3[seg_index])
+		third = int(seg_length/3)
+		twothirds = third + int(seg_length/3)
+		
+		for s in range(STRIP_SEGMENTS3[seg_index]):
+			if var_index == 2:
+				c0 = 1
+				c1 = 1
+				c2 = 1
+				
+				if pos == 0:
+					c0 = c_indices[0]
+				elif pos == 1:
+					c1 = c_indices[1]
+				else:
+					c2 = c_indices[2]
+
+				for i in range(0, third):
+					index = i+s*seg_length
+					strip_arr[index] = color_dict[c2]
+				for i in range(third, twothirds):
+					index = i+s*seg_length
+					strip_arr[index] = color_dict[c1]
+				for i in range(twothirds, seg_length):
+					index = i+s*seg_length
+					strip_arr[index] = color_dict[c0]
+			else:
+				for i in range(0, third):
+					index = (i+s*seg_length+pos)%STRIP_LENGTH
+					strip_arr[index] = color_dict[c_indices[2]]
+				for i in range(third, twothirds):
+					index = (i+s*seg_length+pos)%STRIP_LENGTH
+					strip_arr[index] = color_dict[c_indices[1]]
+				for i in range(twothirds, seg_length):
+					index = (i+s*seg_length+pos)%STRIP_LENGTH
+					strip_arr[index] = color_dict[c_indices[0]]
+				
+		if var_index == 0:
+			pos = (pos+1)%STRIP_LENGTH
+			time.sleep(settings.tick_length*30)
+		elif var_index == 1:
+			pos = (pos+int(seg_length/3))%STRIP_LENGTH
+			pos -= pos%int(seg_length/3)
+			time.sleep(settings.tick_length*500)
+		else:
+			pos = (pos+1)%3
+			time.sleep(settings.tick_length*500)
+
+
+
+def four_colors_anim(e, strip_arr, settings):
+	logging.info("started channel four_colors_anim")
+
+	default_c1 = 3
+	default_c2 = 11
+	default_c3 = 19
+	fixed_c4 = 1
+	
+	pos = 0
+	while True:
+		if e.isSet():
+			return
+			
+		seg_index = settings.segment%len(STRIP_SEGMENTS4)
+		c_indices = getColorIndices(settings, default_c1, default_c2, default_c3)
+
+		seg_length = int(STRIP_LENGTH/STRIP_SEGMENTS4[seg_index])
+		quarter1 = int(seg_length/4)
+		quarter2 = quarter1 + int(seg_length/4)
+		quarter3 = quarter2 + int(seg_length/4)
+		
+		for s in range(STRIP_SEGMENTS4[seg_index]):
+			
+			for i in range(0, quarter1):
+				index = (i+s*seg_length+pos)%STRIP_LENGTH
+				strip_arr[index] = color_dict[fixed_c4]
+			for i in range(quarter1, quarter2):
+				index = (i+s*seg_length+pos)%STRIP_LENGTH
+				strip_arr[index] = color_dict[c_indices[2]]
+			for i in range(quarter2, quarter3):
+				index = (i+s*seg_length+pos)%STRIP_LENGTH
+				strip_arr[index] = color_dict[c_indices[1]]
+			for i in range(quarter3, seg_length):
+				index = (i+s*seg_length+pos)%STRIP_LENGTH
+				strip_arr[index] = color_dict[c_indices[0]]
+				
+		pos = (pos+1)%STRIP_LENGTH
+		time.sleep(settings.tick_length*30)
+
+def two_color_transition(e, strip_arr, settings):
+	logging.info("started channel color_transition_full")
+	
+	default_c1 = 3
+	default_c2 = 15
+	
+	
+	
+	while True:
+		if e.isSet():
+			return
+		
+		seg_index = settings.segment%len(STRIP_SEGMENTS2)
+		c_indices = getColorIndices(settings, default_c1, default_c2, 0)
+
+		
+		seg_length = int(STRIP_LENGTH/STRIP_SEGMENTS2[seg_index])
+		
+		color1 = color_dict[c_indices[0]]
+		color2 = color_dict[c_indices[1]]
+			
+		#var_index = settings.variation%len(parts)
+		
+		color_diff = (color2[0]-color1[0], color2[1]-color1[1], color2[2]-color1[2]) 
+		
+		for s in range(STRIP_SEGMENTS2[seg_index]):		
+			for j in range(seg_length):
+				index = s*seg_length+j
+				perc = j/seg_length
+				
+				if s%2 == 0:
+					strip_arr[index] = (int(color2[0]-color_diff[0]*perc), int(color2[1]-color_diff[1]*perc), int(color2[2]-color_diff[2]*perc))
+				else:
+					strip_arr[index] = (int(color1[0]+color_diff[0]*perc), int(color1[1]+color_diff[1]*perc), int(color1[2]+color_diff[2]*perc))
+				
+
+
+		time.sleep(settings.tick_length*100)
+		
+def color_transition_full(e, strip_arr, settings):
+	logging.info("started channel color_transition_full")
+	
+	parts = [1,2,3,4,6,8,10,20,30]
+	default_c1 = 3
+	default_c2 = 11
+	
+	while True:
+		if e.isSet():
+			return
+		
+		c_indices = getColorIndices(settings, default_c1, default_c2, 0)
+		
+		color1 = color_dict[c_indices[0]]
+		color2 = color_dict[c_indices[1]]
+			
+		var_index = settings.variation%len(parts)
+		part_len = int(STRIP_LENGTH/parts[var_index])
+		color_diff = (color2[0]-color1[0], color2[1]-color1[1], color2[2]-color1[2]) 
+		
+		for i in range(parts[var_index]):
+			for j in range(part_len):
+				index = i*part_len+j
+				perc = j/part_len
+				
+				if i%2 == 0:
+					strip_arr[index] = (int(color2[0]-color_diff[0]*perc), int(color2[1]-color_diff[1]*perc), int(color2[2]-color_diff[2]*perc))
+				else:
+					strip_arr[index] = (int(color1[0]+color_diff[0]*perc), int(color1[1]+color_diff[1]*perc), int(color1[2]+color_diff[2]*perc))
+				
+
+
+		time.sleep(settings.tick_length*100)		
+
+def alternating_travel(e, strip_arr, settings):
+	logging.info("started channel alternating_travel")
+
+	staggering = [(2), (4), (6), (10), (20), (60)]
+	
+	default_c1 = 2
+	default_c2 = 1
+	
+	pos = 0
+	while True:
+		if e.isSet():
+			return
+			
+		c_indices = getColorIndices(settings, default_c1, default_c2, 0)
+			
+		var_index = settings.variation%len(staggering)
+		
+		for i in range(STRIP_LENGTH):
+			if i%(STRIP_LENGTH/(staggering[var_index]/2)) < STRIP_LENGTH/staggering[var_index]:
+				strip_arr[(i+pos)%STRIP_LENGTH] = color_dict[c_indices[0]]
+			else:
+				strip_arr[(i+pos)%STRIP_LENGTH] = color_dict[c_indices[1]]
+		
+		pos = (pos+1)%STRIP_LENGTH
+		
+		time.sleep(settings.tick_length*30)		
 
 def ping_pong(e, strip_arr, settings):
 	logging.info("started channel ping_pong")
@@ -291,32 +578,7 @@ def alternating_blinking(e, strip_arr, settings):
 		pos = (pos+1)%2
 		time.sleep(settings.tick_length*500)
 
-def alternating_travel(e, strip_arr, settings):
-	logging.info("started channel alternating_travel")
 
-	staggering = [(2), (4), (6), (10), (20), (60)]
-	
-	default_c1 = 2
-	default_c2 = 1
-	
-	pos = 0
-	while True:
-		if e.isSet():
-			return
-			
-		c_indices = getColorIndices(settings, default_c1, default_c2, 0)
-			
-		var_index = settings.variation%len(staggering)
-		
-		for i in range(STRIP_LENGTH):
-			if i%(STRIP_LENGTH/(staggering[var_index]/2)) < STRIP_LENGTH/staggering[var_index]:
-				strip_arr[(i+pos)%STRIP_LENGTH] = color_dict[c_indices[0]]
-			else:
-				strip_arr[(i+pos)%STRIP_LENGTH] = color_dict[c_indices[1]]
-		
-		pos = (pos+1)%STRIP_LENGTH
-		
-		time.sleep(settings.tick_length*30)
 
 def rolling_ball(e, strip_arr, settings):
 	logging.info("started channel rolling_ball")
@@ -502,39 +764,7 @@ def color_transition(e, strip_arr, settings):
 
 		time.sleep(settings.tick_length*100)
 
-def color_transition_full(e, strip_arr, settings):
-	logging.info("started channel color_transition_full")
-	
-	parts = [1,2,3,4,6,8,10,20,30]
-	default_c1 = 3
-	default_c2 = 11
-	
-	while True:
-		if e.isSet():
-			return
-		
-		c_indices = getColorIndices(settings, default_c1, default_c2, 0)
-		
-		color1 = color_dict[c_indices[0]]
-		color2 = color_dict[c_indices[1]]
-			
-		var_index = settings.variation%len(parts)
-		part_len = int(STRIP_LENGTH/parts[var_index])
-		color_diff = (color2[0]-color1[0], color2[1]-color1[1], color2[2]-color1[2]) 
-		
-		for i in range(parts[var_index]):
-			for j in range(part_len):
-				index = i*part_len+j
-				perc = j/part_len
-				
-				if i%2 == 0:
-					strip_arr[index] = (int(color2[0]-color_diff[0]*perc), int(color2[1]-color_diff[1]*perc), int(color2[2]-color_diff[2]*perc))
-				else:
-					strip_arr[index] = (int(color1[0]+color_diff[0]*perc), int(color1[1]+color_diff[1]*perc), int(color1[2]+color_diff[2]*perc))
-				
 
-
-		time.sleep(settings.tick_length*100)
 
 def color_transition_anim(e, strip_arr, settings):
 	logging.info("started channel color_transition_anim")
