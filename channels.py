@@ -311,6 +311,7 @@ def two_color_transition(e, strip_arr, settings):
 				index = s*seg_length+j
 				perc = j/seg_length
 				
+				
 				if s%2 == 0:
 					strip_arr[index] = (int(color2[0]-color_diff[0]*perc), int(color2[1]-color_diff[1]*perc), int(color2[2]-color_diff[2]*perc))
 				else:
@@ -319,6 +320,284 @@ def two_color_transition(e, strip_arr, settings):
 
 
 		time.sleep(settings.tick_length*100)
+
+
+def two_color_transition_anim(e, strip_arr, settings):
+	logging.info("started channel two_color_transition_anim")
+	
+	default_c1 = 3
+	default_c2 = 15
+	
+	
+	pos = 0
+	while True:
+		if e.isSet():
+			return
+		
+		seg_index = settings.segment%len(STRIP_SEGMENTS2_EVEN)
+		c_indices = getColorIndices(settings, default_c1, default_c2, 0)
+
+		
+		seg_length = int(STRIP_LENGTH/STRIP_SEGMENTS2_EVEN[seg_index])
+		
+		color1 = color_dict[c_indices[0]]
+		color2 = color_dict[c_indices[1]]
+			
+		#var_index = settings.variation%len(parts)
+		
+		color_diff = (color2[0]-color1[0], color2[1]-color1[1], color2[2]-color1[2]) 
+		
+		for s in range(STRIP_SEGMENTS2_EVEN[seg_index]):		
+			for j in range(seg_length):
+				index = s*seg_length+j
+				index = (index+pos)%STRIP_LENGTH
+				perc = j/seg_length
+				
+				
+				if s%2 == 0:
+					strip_arr[index] = (int(color2[0]-color_diff[0]*perc), int(color2[1]-color_diff[1]*perc), int(color2[2]-color_diff[2]*perc))
+				else:
+					strip_arr[index] = (int(color1[0]+color_diff[0]*perc), int(color1[1]+color_diff[1]*perc), int(color1[2]+color_diff[2]*perc))
+				
+
+		pos = (pos+1)%STRIP_LENGTH
+		time.sleep(settings.tick_length*30)
+
+
+def three_color_transistion(e, strip_arr, settings):
+	logging.info("started channel three_color_transistion")
+
+	default_c1 = 3
+	default_c2 = 11
+	default_c3 = 19
+
+	staggering = [(1), (1/20), (1/12), (1/8), (1/6), (1/4)]
+
+	while True:
+		if e.isSet():
+			return
+
+		seg_index = settings.segment%len(STRIP_SEGMENTS)
+		c_indices = getColorIndices(settings, default_c1, default_c2, default_c3)
+		
+		seg_length = int(STRIP_LENGTH/STRIP_SEGMENTS[seg_index])
+		
+		color1 = color_dict[c_indices[0]]
+		color2 = color_dict[c_indices[1]]
+		color3 = color_dict[c_indices[2]]
+		
+		var_index = settings.variation%len(staggering)
+		
+		
+		for s in range(STRIP_SEGMENTS[seg_index]):		
+			for i in range(seg_length): 
+				index = s*seg_length+i 
+				perc = i/seg_length
+				if staggering[var_index] != 1:
+					perc -= perc%staggering[var_index]
+				strip_arr[index] = rainbow_wheel(perc, color1, color2, color3)
+			
+		time.sleep(settings.tick_length*100)
+
+
+def three_color_transistion_anim(e, strip_arr, settings):
+	logging.info("started channel three_color_transistion_anim")
+
+	default_c1 = 3
+	default_c2 = 11
+	default_c3 = 19
+
+	staggering = [(1), (1/20), (1/12), (1/8), (1/6), (1/4)]
+	
+	pos = 0
+	while True:
+		if e.isSet():
+			return
+
+		seg_index = settings.segment%len(STRIP_SEGMENTS)
+		c_indices = getColorIndices(settings, default_c1, default_c2, default_c3)
+		
+		seg_length = int(STRIP_LENGTH/STRIP_SEGMENTS[seg_index])
+		
+		color1 = color_dict[c_indices[0]]
+		color2 = color_dict[c_indices[1]]
+		color3 = color_dict[c_indices[2]]
+		
+		var_index = settings.variation%len(staggering)
+		
+		
+		for s in range(STRIP_SEGMENTS[seg_index]):		
+			for i in range(seg_length): 
+				index = s*seg_length+i
+				index = (index+pos)%STRIP_LENGTH
+				perc = i/seg_length
+				if staggering[var_index] != 1:
+					perc -= perc%staggering[var_index]
+				strip_arr[index] = rainbow_wheel(perc, color1, color2, color3)
+			
+		pos = (pos+1)%STRIP_LENGTH
+		time.sleep(settings.tick_length*30)
+
+
+
+def two_color_transition_fade(e, strip_arr, settings):
+	logging.info("started channel two_color_transition_anim")
+	
+	default_c1 = 3
+	default_c2 = 15
+	
+	steps = 360
+	
+	pos = 0
+	while True:
+		if e.isSet():
+			return
+		
+		c_indices = getColorIndices(settings, default_c1, default_c2, 0)
+
+		
+		
+		color1 = color_dict[c_indices[0]]
+		color2 = color_dict[c_indices[1]]
+			
+		#var_index = settings.variation%len(parts)
+		
+		color_diff = (color2[0]-color1[0], color2[1]-color1[1], color2[2]-color1[2]) 
+		if pos>steps/2:
+			perc = (steps/2-pos%(steps/2))/(steps/2)
+		else:
+			perc = pos/(steps/2)
+			
+		for i in range(STRIP_LENGTH):
+			strip_arr[i] = (int(color2[0]-color_diff[0]*perc), int(color2[1]-color_diff[1]*perc), int(color2[2]-color_diff[2]*perc))
+			
+
+		pos = (pos+1)%steps
+		time.sleep(settings.tick_length*30)
+
+
+def three_color_transistion_fade(e, strip_arr, settings):
+	logging.info("started channel three_color_transistion_fade")
+
+	default_c1 = 3
+	default_c2 = 11
+	default_c3 = 19
+
+	staggering = [(1), (1/20), (1/12), (1/8), (1/6), (1/4)]
+	
+	steps = 720
+	
+	pos = 0
+	while True:
+		if e.isSet():
+			return
+
+		seg_index = settings.segment%len(STRIP_SEGMENTS)
+		c_indices = getColorIndices(settings, default_c1, default_c2, default_c3)
+		
+		seg_length = int(STRIP_LENGTH/STRIP_SEGMENTS[seg_index])
+		
+		color1 = color_dict[c_indices[0]]
+		color2 = color_dict[c_indices[1]]
+		color3 = color_dict[c_indices[2]]
+		
+		var_index = settings.variation%len(staggering)
+		
+		if pos>steps/2:
+			perc = (steps/2-pos%(steps/2))/(steps/2)
+		else:
+			perc = pos/(steps/2)
+			
+		if staggering[var_index] != 1:
+			perc -= perc%staggering[var_index]
+		
+		pos_color = rainbow_wheel(perc, color1, color2, color3)
+		for i in range(STRIP_LENGTH):
+			strip_arr[i] = pos_color
+		
+			
+		pos = (pos+1)%steps
+		time.sleep(settings.tick_length*30)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def rainbow_alt(e, strip_arr, settings):
+	logging.info("started channel rainbow_alt")
+
+	default_c1 = 3
+	default_c2 = 11
+	default_c3 = 19
+
+	staggering = [(1), (1/12), (1/6)]
+
+	while True:
+		if e.isSet():
+			return
+
+		c_indices = getColorIndices(settings, default_c1, default_c2, default_c3)
+		
+		color1 = color_dict[c_indices[0]]
+		color2 = color_dict[c_indices[1]]
+		color3 = color_dict[c_indices[2]]
+		
+		var_index = settings.variation%len(staggering)
+		   
+		for i in range(STRIP_LENGTH):
+			perc = i/STRIP_LENGTH
+			if staggering[var_index] != 1:
+				perc -= perc%staggering[var_index]
+			strip_arr[i] = rainbow_wheel(perc, color1, color2, color3)
+			
+		time.sleep(settings.tick_length*100)
+
+def rainbow_alt_anim(e, strip_arr, settings):
+	logging.info("started channel rainbow_alt_anim")
+	
+	default_c1 = 3
+	default_c2 = 11
+	default_c3 = 19
+
+	staggering = [(1), (1/12), (1/6)]
+	
+	pos = 0
+	while True:
+		if e.isSet():
+			return
+			
+		c_indices = getColorIndices(settings, default_c1, default_c2, default_c3)
+		
+		color1 = color_dict[c_indices[0]]
+		color2 = color_dict[c_indices[1]]
+		color3 = color_dict[c_indices[2]]
+
+		var_index = settings.variation%len(staggering)
+		   
+		for i in range(STRIP_LENGTH):
+			perc = i/STRIP_LENGTH
+			if staggering[var_index] != 1:
+				perc -= perc%staggering[var_index]
+			strip_arr[(i+pos)%STRIP_LENGTH] = rainbow_wheel(perc, color1, color2, color3)
+		
+		pos += 1
+		time.sleep(settings.tick_length*10)
+
+
+
 		
 def color_transition_full(e, strip_arr, settings):
 	logging.info("started channel color_transition_full")
@@ -353,6 +632,10 @@ def color_transition_full(e, strip_arr, settings):
 
 
 		time.sleep(settings.tick_length*100)		
+
+
+
+
 
 def alternating_travel(e, strip_arr, settings):
 	logging.info("started channel alternating_travel")
@@ -1006,65 +1289,7 @@ def rainbow_wheel(pos, c1, c2, c3):
 		mult = (pos-2/3)*3
 		return (int(c3[0]+(c1[0]-c3[0])*mult),int(c3[1]+(c1[1]-c3[1])*mult),int(c3[2]+(c1[2]-c3[2])*mult))
 	
-def rainbow_alt(e, strip_arr, settings):
-	logging.info("started channel rainbow_alt")
 
-	default_c1 = 3
-	default_c2 = 11
-	default_c3 = 19
-
-	staggering = [(1), (1/12), (1/6)]
-
-	while True:
-		if e.isSet():
-			return
-
-		c_indices = getColorIndices(settings, default_c1, default_c2, default_c3)
-		
-		color1 = color_dict[c_indices[0]]
-		color2 = color_dict[c_indices[1]]
-		color3 = color_dict[c_indices[2]]
-		
-		var_index = settings.variation%len(staggering)
-		   
-		for i in range(STRIP_LENGTH):
-			perc = i/STRIP_LENGTH
-			if staggering[var_index] != 1:
-				perc -= perc%staggering[var_index]
-			strip_arr[i] = rainbow_wheel(perc, color1, color2, color3)
-			
-		time.sleep(settings.tick_length*100)
-
-def rainbow_alt_anim(e, strip_arr, settings):
-	logging.info("started channel rainbow_alt_anim")
-	
-	default_c1 = 3
-	default_c2 = 11
-	default_c3 = 19
-
-	staggering = [(1), (1/12), (1/6)]
-	
-	pos = 0
-	while True:
-		if e.isSet():
-			return
-			
-		c_indices = getColorIndices(settings, default_c1, default_c2, default_c3)
-		
-		color1 = color_dict[c_indices[0]]
-		color2 = color_dict[c_indices[1]]
-		color3 = color_dict[c_indices[2]]
-
-		var_index = settings.variation%len(staggering)
-		   
-		for i in range(STRIP_LENGTH):
-			perc = i/STRIP_LENGTH
-			if staggering[var_index] != 1:
-				perc -= perc%staggering[var_index]
-			strip_arr[(i+pos)%STRIP_LENGTH] = rainbow_wheel(perc, color1, color2, color3)
-		
-		pos += 1
-		time.sleep(settings.tick_length*10)
 		
 def rainbow_fade_alt(e, strip_arr, settings):
 	logging.info("started channel rainbow_fade_alt")
